@@ -37,14 +37,14 @@ constexpr uint8_t EPD_PWR = D5;
 
 // Waveshare 5.83" V2, Schwarz/Weiss, 648 x 480
 GxEPD2_BW<
-  GxEPD2_583_T8,
-  GxEPD2_583_T8::HEIGHT / 2 >
-  display(
-    GxEPD2_583_T8(
-      EPD_CS,
-      EPD_DC,
-      EPD_RST,
-      EPD_BUSY));
+GxEPD2_583_T8,
+GxEPD2_583_T8::HEIGHT / 2 >
+display(
+GxEPD2_583_T8(
+EPD_CS,
+EPD_DC,
+EPD_RST,
+EPD_BUSY));
 
 
 // ============================================================
@@ -76,8 +76,8 @@ constexpr uint8_t BLE_TX_MAX_RETRIES = 20;
 // ============================================================
 
 struct PersonState {
-  String status;
-  String text;
+    String status;
+    String text;
 };
 
 PersonState personState[PERSON_COUNT];
@@ -88,14 +88,14 @@ PersonState personState[PERSON_COUNT];
 // ============================================================
 
 int findPersonIndex(const String& id) {
-  for (size_t i = 0; i < PERSON_COUNT; i++) {
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
 
-    if (id == PERSONS[i].id) {
-      return i;
+        if (id == PERSONS[i].id) {
+            return i;
+        }
     }
-  }
 
-  return -1;
+    return -1;
 }
 
 
@@ -104,43 +104,43 @@ int findPersonIndex(const String& id) {
 // ============================================================
 
 bool saveState() {
-  File file(InternalFS);
+    File file(InternalFS);
 
-  if (!file.open(STATE_FILE, FILE_O_WRITE)) {
+    if (!file.open(STATE_FILE, FILE_O_WRITE)) {
+
+        Serial.println(
+        "Fehler: Statusdatei kann nicht geoeffnet werden");
+
+        return false;
+    }
+
+
+    file.truncate();
+    file.seek(0);
+
+
+    file.println("V1");
+
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+
+        file.print(PERSONS[i].id);
+        file.print("|");
+
+        file.print(personState[i].status);
+        file.print("|");
+
+        file.println(personState[i].text);
+    }
+
+
+    file.close();
+
 
     Serial.println(
-      "Fehler: Statusdatei kann nicht geoeffnet werden");
-
-    return false;
-  }
-
-
-  file.truncate();
-  file.seek(0);
-
-
-  file.println("V1");
-
-
-  for (size_t i = 0; i < PERSON_COUNT; i++) {
-
-    file.print(PERSONS[i].id);
-    file.print("|");
-
-    file.print(personState[i].status);
-    file.print("|");
-
-    file.println(personState[i].text);
-  }
-
-
-  file.close();
-
-
-  Serial.println(
     "Status im Flash gespeichert");
 
-  return true;
+    return true;
 }
 
 
@@ -149,119 +149,119 @@ bool saveState() {
 // ============================================================
 
 bool loadState() {
-  File file(InternalFS);
+    File file(InternalFS);
 
-  if (!file.open(STATE_FILE, FILE_O_READ)) {
+    if (!file.open(STATE_FILE, FILE_O_READ)) {
 
-    Serial.println(
-      "Keine gespeicherten Statusdaten vorhanden");
+        Serial.println(
+        "Keine gespeicherten Statusdaten vorhanden");
 
-    return false;
-  }
-
-
-  String version =
-    file.readStringUntil('\n');
-
-  version.trim();
-
-
-  if (version != "V1") {
-
-    Serial.print(
-      "Unbekannte Statusdatei-Version: ");
-
-    Serial.println(version);
-
-    file.close();
-
-    return false;
-  }
-
-
-  while (file.available()) {
-
-    String line =
-      file.readStringUntil('\n');
-
-    line.trim();
-
-
-    if (line.length() == 0) {
-      continue;
+        return false;
     }
 
 
-    int separator1 =
-      line.indexOf('|');
+    String version =
+    file.readStringUntil('\n');
 
-    int separator2 =
-      line.indexOf(
+    version.trim();
+
+
+    if (version != "V1") {
+
+        Serial.print(
+        "Unbekannte Statusdatei-Version: ");
+
+        Serial.println(version);
+
+        file.close();
+
+        return false;
+    }
+
+
+    while (file.available()) {
+
+        String line =
+        file.readStringUntil('\n');
+
+        line.trim();
+
+
+        if (line.length() == 0) {
+            continue;
+        }
+
+
+        int separator1 =
+        line.indexOf('|');
+
+        int separator2 =
+        line.indexOf(
         '|',
         separator1 + 1);
 
 
-    if (separator1 < 0 || separator2 < 0) {
+        if (separator1 < 0 || separator2 < 0) {
 
-      Serial.print(
-        "Ungueltige Statuszeile: ");
+            Serial.print(
+            "Ungueltige Statuszeile: ");
 
-      Serial.println(line);
+            Serial.println(line);
 
-      continue;
-    }
+            continue;
+        }
 
 
-    String personId =
-      line.substring(
+        String personId =
+        line.substring(
         0,
         separator1);
 
-    String status =
-      line.substring(
+        String status =
+        line.substring(
         separator1 + 1,
         separator2);
 
-    String text =
-      line.substring(
+        String text =
+        line.substring(
         separator2 + 1);
 
 
-    personId.trim();
-    status.trim();
-    text.trim();
+        personId.trim();
+        status.trim();
+        text.trim();
 
 
-    int index =
-      findPersonIndex(personId);
+        int index =
+        findPersonIndex(personId);
 
 
-    if (index < 0) {
+        if (index < 0) {
 
-      Serial.print(
-        "Unbekannte Person im Flash: ");
+            Serial.print(
+            "Unbekannte Person im Flash: ");
 
-      Serial.println(personId);
+            Serial.println(personId);
 
-      continue;
+            continue;
+        }
+
+
+        personState[index].status =
+        status;
+
+        personState[index].text =
+        text;
     }
 
 
-    personState[index].status =
-      status;
-
-    personState[index].text =
-      text;
-  }
+    file.close();
 
 
-  file.close();
-
-
-  Serial.println(
+    Serial.println(
     "Status aus Flash geladen");
 
-  return true;
+    return true;
 }
 
 
@@ -270,14 +270,14 @@ bool loadState() {
 // ============================================================
 
 uint16_t textWidth(const String& text) {
-  int16_t x1;
-  int16_t y1;
+    int16_t x1;
+    int16_t y1;
 
-  uint16_t w;
-  uint16_t h;
+    uint16_t w;
+    uint16_t h;
 
 
-  display.getTextBounds(
+    display.getTextBounds(
     text.c_str(),
     0,
     0,
@@ -287,7 +287,7 @@ uint16_t textWidth(const String& text) {
     &h);
 
 
-  return w;
+    return w;
 }
 
 
@@ -296,16 +296,16 @@ uint16_t textWidth(const String& text) {
 // ============================================================
 
 void drawCentered(
-  const String& text,
-  int16_t y) {
-  int16_t x1;
-  int16_t y1;
+const String& text,
+int16_t y) {
+    int16_t x1;
+    int16_t y1;
 
-  uint16_t w;
-  uint16_t h;
+    uint16_t w;
+    uint16_t h;
 
 
-  display.getTextBounds(
+    display.getTextBounds(
     text.c_str(),
     0,
     0,
@@ -315,15 +315,15 @@ void drawCentered(
     &h);
 
 
-  int16_t x =
+    int16_t x =
     (display.width() - w) / 2 - x1;
 
 
-  display.setCursor(
+    display.setCursor(
     x,
     y);
 
-  display.print(text);
+    display.print(text);
 }
 
 
@@ -332,94 +332,94 @@ void drawCentered(
 // ============================================================
 
 void drawWrappedText(
-  const String& text,
-  int16_t x,
-  int16_t y,
-  uint16_t maxWidth,
-  uint8_t maxLines,
-  uint16_t lineHeight) {
-  if (text.length() == 0) {
-    return;
-  }
+const String& text,
+int16_t x,
+int16_t y,
+uint16_t maxWidth,
+uint8_t maxLines,
+uint16_t lineHeight) {
+    if (text.length() == 0) {
+        return;
+    }
 
 
-  String remaining = text;
-  String line;
+    String remaining = text;
+    String line;
 
-  uint8_t lines = 0;
+    uint8_t lines = 0;
 
 
-  while (
+    while (
     remaining.length() > 0 && lines < maxLines) {
 
-    int spacePos =
-      remaining.indexOf(' ');
+        int spacePos =
+        remaining.indexOf(' ');
 
 
-    String word;
+        String word;
 
 
-    if (spacePos < 0) {
+        if (spacePos < 0) {
 
-      word = remaining;
-      remaining = "";
+            word = remaining;
+            remaining = "";
 
-    } else {
+        } else {
 
-      word =
-        remaining.substring(
-          0,
-          spacePos);
+            word =
+            remaining.substring(
+            0,
+            spacePos);
 
-      remaining =
-        remaining.substring(
-          spacePos + 1);
+            remaining =
+            remaining.substring(
+            spacePos + 1);
+        }
+
+
+        String candidate = line;
+
+
+        if (candidate.length() > 0) {
+            candidate += " ";
+        }
+
+
+        candidate += word;
+
+
+        if (textWidth(candidate) <= maxWidth) {
+
+            line = candidate;
+            continue;
+        }
+
+
+        if (line.length() > 0) {
+
+            display.setCursor(
+            x,
+            y + lines * lineHeight);
+
+            display.print(line);
+
+            lines++;
+        }
+
+
+        line = word;
     }
 
 
-    String candidate = line;
+    if (
+    line.length() > 0 && lines < maxLines) {
 
-
-    if (candidate.length() > 0) {
-      candidate += " ";
-    }
-
-
-    candidate += word;
-
-
-    if (textWidth(candidate) <= maxWidth) {
-
-      line = candidate;
-      continue;
-    }
-
-
-    if (line.length() > 0) {
-
-      display.setCursor(
+        display.setCursor(
         x,
         y + lines * lineHeight);
 
-      display.print(line);
-
-      lines++;
+        display.print(line);
     }
-
-
-    line = word;
-  }
-
-
-  if (
-    line.length() > 0 && lines < maxLines) {
-
-    display.setCursor(
-      x,
-      y + lines * lineHeight);
-
-    display.print(line);
-  }
 }
 
 
@@ -428,78 +428,72 @@ void drawWrappedText(
 // ============================================================
 
 void drawPerson(
-  size_t index,
-  int16_t top,
-  int16_t height) {
-  constexpr int16_t LEFT = 32;
-  constexpr int16_t RIGHT = 32;
+size_t index,
+int16_t top,
+int16_t height) {
+    constexpr int16_t LEFT = 32;
+    constexpr int16_t RIGHT = 32;
 
-
-  const uint16_t usableWidth =
+    const uint16_t usableWidth =
     display.width() - LEFT - RIGHT;
 
 
-  // Name
+    // --------------------------------------------------------
+    // Name
+    // --------------------------------------------------------
 
-  display.setFont(
-    &FreeMonoBold18pt7b);
-
-
-  display.setCursor(
-    LEFT,
-    top + 43);
-
-
-  display.print(
-    PERSONS[index].name);
-
-
-  // Status
-
-  String status =
-    personState[index].status;
-
-
-  if (status.length() > 0) {
-
-    status.toUpperCase();
-
-
-    display.setFont(
-      &FreeMonoBold12pt7b);
-
+    display.setFont(&FreeMonoBold18pt7b);
 
     display.setCursor(
-      LEFT,
-      top + 90);
+    LEFT,
+    top + 38);
+
+    display.print(PERSONS[index].name);
 
 
-    display.print(status);
-  }
+    // --------------------------------------------------------
+    // Status
+    // --------------------------------------------------------
+
+    String status = personState[index].status;
+
+    if (status.length() > 0) {
+
+        status.toUpperCase();
+
+        display.setFont(&FreeMonoBold12pt7b);
+
+        display.setCursor(
+        LEFT,
+        top + 76);
+
+        display.print(status);
+    }
 
 
-  // Freitext
+    // --------------------------------------------------------
+    // Freitext
+    // --------------------------------------------------------
 
-  if (
-    personState[index].text.length() > 0) {
+    if (personState[index].text.length() > 0) {
 
-    display.setFont(
-      &FreeMono12pt7b);
+        display.setFont(&FreeMono12pt7b);
 
-
-    drawWrappedText(
-      personState[index].text,
-      LEFT,
-      top + 132,
-      usableWidth,
-      2,
-      31);
-  }
+        drawWrappedText(
+        personState[index].text,
+        LEFT,
+        top + 108,
+        usableWidth,
+        2,
+        24);
+    }
 
 
-  // Trennlinie
+    // --------------------------------------------------------
+    // Trennlinie unten
+    // --------------------------------------------------------
 
-  display.drawLine(
+    display.drawLine(
     LEFT,
     top + height - 1,
     display.width() - RIGHT,
@@ -513,16 +507,31 @@ void drawPerson(
 // ============================================================
 
 void drawFooter(int16_t top) {
-  display.setFont(
-    &FreeMonoBold12pt7b);
+    constexpr int16_t LEFT = 32;
 
-  drawCentered(
-    DEPARTMENT,
-    top + 31);
+    // obere Trennlinie des Footers
+    display.drawLine(
+    LEFT,
+    top,
+    display.width() - LEFT,
+    top,
+    GxEPD_BLACK);
 
-  drawCentered(
-    ORGANIZATION,
-    top + 61);
+    // 1. Zeile: Organisation
+    display.setFont(&FreeMonoBold12pt7b);
+
+    display.setCursor(
+    LEFT,
+    top + 50);
+
+    display.print(ORGANIZATION);
+
+    // 2. Zeile: Sachgebiet
+    display.setCursor(
+    LEFT,
+    top + 95);
+
+    display.print(DEPARTMENT);
 }
 
 
@@ -531,39 +540,28 @@ void drawFooter(int16_t top) {
 // ============================================================
 
 void drawRoomSign() {
-  display.fillScreen(
-    GxEPD_WHITE);
+    display.fillScreen(GxEPD_WHITE);
+    display.setTextColor(GxEPD_BLACK);
 
+    constexpr int16_t FOOTER_HEIGHT = 160;
 
-  display.setTextColor(
-    GxEPD_BLACK);
-
-
-  constexpr int16_t FOOTER_HEIGHT = 82;
-
-
-  const int16_t personsHeight =
+    const int16_t personsHeight =
     display.height() - FOOTER_HEIGHT;
 
-
-  const int16_t personHeight =
+    const int16_t personHeight =
     personsHeight / PERSON_COUNT;
 
 
-  for (
-    size_t i = 0;
-    i < PERSON_COUNT;
-    i++) {
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
 
-    drawPerson(
-      i,
-      i * personHeight,
-      personHeight);
-  }
+        drawPerson(
+        i,
+        i * personHeight,
+        personHeight);
+    }
 
 
-  drawFooter(
-    personsHeight);
+    drawFooter(personsHeight);
 }
 
 
@@ -572,56 +570,56 @@ void drawRoomSign() {
 // ============================================================
 
 void updateDisplay() {
-  Serial.println(
+    Serial.println(
     "E-Paper wird aktualisiert ...");
 
 
-  pinMode(
+    pinMode(
     EPD_PWR,
     OUTPUT);
 
 
-  digitalWrite(
+    digitalWrite(
     EPD_PWR,
     HIGH);
 
 
-  delay(100);
+    delay(100);
 
 
-  display.init(
+    display.init(
     115200,
     true,
     10,
     false);
 
 
-  display.setRotation(0);
-  display.setFullWindow();
+    display.setRotation(0);
+    display.setFullWindow();
 
 
-  display.firstPage();
+    display.firstPage();
 
 
-  do {
+    do {
 
-    drawRoomSign();
+        drawRoomSign();
 
-  } while (
+    } while (
     display.nextPage());
 
 
-  display.hibernate();
+    display.hibernate();
 
-  delay(100);
+    delay(100);
 
 
-  digitalWrite(
+    digitalWrite(
     EPD_PWR,
     LOW);
 
 
-  Serial.println(
+    Serial.println(
     "E-Paper aktualisiert; HAT aus");
 }
 
@@ -631,87 +629,87 @@ void updateDisplay() {
 // ============================================================
 
 bool sendBleData(const String& data) {
-  if (!Bluefruit.connected()) {
-    return false;
-  }
+    if (!Bluefruit.connected()) {
+        return false;
+    }
 
 
-  if (!bleuart.notifyEnabled()) {
-    return false;
-  }
+    if (!bleuart.notifyEnabled()) {
+        return false;
+    }
 
 
-  const uint8_t* bytes =
+    const uint8_t* bytes =
     reinterpret_cast<const uint8_t*>(
-      data.c_str());
+    data.c_str());
 
 
-  size_t total =
+    size_t total =
     data.length();
 
 
-  size_t offset = 0;
+    size_t offset = 0;
 
 
-  while (offset < total) {
+    while (offset < total) {
 
-    size_t remaining =
-      total - offset;
+        size_t remaining =
+        total - offset;
 
 
-    size_t chunkSize =
-      remaining > BLE_TX_CHUNK_SIZE
+        size_t chunkSize =
+        remaining > BLE_TX_CHUNK_SIZE
         ? BLE_TX_CHUNK_SIZE
         : remaining;
 
 
-    size_t sent = 0;
-    uint8_t retries = 0;
+        size_t sent = 0;
+        uint8_t retries = 0;
 
 
-    while (
-      sent < chunkSize && retries < BLE_TX_MAX_RETRIES) {
+        while (
+        sent < chunkSize && retries < BLE_TX_MAX_RETRIES) {
 
-      size_t written =
-        bleuart.write(
-          bytes + offset + sent,
-          chunkSize - sent);
+            size_t written =
+            bleuart.write(
+            bytes + offset + sent,
+            chunkSize - sent);
 
 
-      if (written > 0) {
+            if (written > 0) {
 
-        sent += written;
+                sent += written;
 
-      } else {
+            } else {
 
-        retries++;
+                retries++;
+
+                delay(
+                BLE_TX_PAUSE_MS);
+            }
+        }
+
+
+        if (sent != chunkSize) {
+
+            Serial.println(
+            "WARNUNG: BLE TX konnte nicht vollstaendig senden");
+
+            return false;
+        }
+
+
+        offset += chunkSize;
+
+
+        // Notification-Puffer Zeit zum Leeren geben
 
         delay(
-          BLE_TX_PAUSE_MS);
-      }
+        BLE_TX_PAUSE_MS);
     }
 
 
-    if (sent != chunkSize) {
-
-      Serial.println(
-        "WARNUNG: BLE TX konnte nicht vollstaendig senden");
-
-      return false;
-    }
-
-
-    offset += chunkSize;
-
-
-    // Notification-Puffer Zeit zum Leeren geben
-
-    delay(
-      BLE_TX_PAUSE_MS);
-  }
-
-
-  return true;
+    return true;
 }
 
 
@@ -720,21 +718,21 @@ bool sendBleData(const String& data) {
 // ============================================================
 
 void sendLine(const String& text) {
-  // Immer ins serielle Log
+    // Immer ins serielle Log
 
-  Serial.println(text);
-
-
-  if (!Bluefruit.connected()) {
-    return;
-  }
+    Serial.println(text);
 
 
-  String line =
+    if (!Bluefruit.connected()) {
+        return;
+    }
+
+
+    String line =
     text + "\n";
 
 
-  sendBleData(
+    sendBleData(
     line);
 }
 
@@ -744,33 +742,33 @@ void sendLine(const String& text) {
 // ============================================================
 
 void sendInfo() {
-  sendLine(
+    sendLine(
     "INFO_BEGIN");
 
 
-  sendLine(
+    sendLine(
     String("ROOM|") + ROOM_NUMBER);
 
 
-  sendLine(
+    sendLine(
     String("ORG|") + ORGANIZATION);
 
 
-  sendLine(
+    sendLine(
     String("DEPT|") + DEPARTMENT);
 
 
-  for (
+    for (
     size_t i = 0;
     i < PERSON_COUNT;
     i++) {
 
+        sendLine(
+        String("PERSON|") + PERSONS[i].id + "|" + PERSONS[i].name);
+    }
+
+
     sendLine(
-      String("PERSON|") + PERSONS[i].id + "|" + PERSONS[i].name);
-  }
-
-
-  sendLine(
     "INFO_END");
 }
 
@@ -780,21 +778,21 @@ void sendInfo() {
 // ============================================================
 
 void sendStates() {
-  sendLine(
+    sendLine(
     "STATE_BEGIN");
 
 
-  for (
+    for (
     size_t i = 0;
     i < PERSON_COUNT;
     i++) {
 
+        sendLine(
+        String("STATE|") + PERSONS[i].id + "|" + PERSONS[i].name + "|" + personState[i].status + "|" + personState[i].text);
+    }
+
+
     sendLine(
-      String("STATE|") + PERSONS[i].id + "|" + PERSONS[i].name + "|" + personState[i].status + "|" + personState[i].text);
-  }
-
-
-  sendLine(
     "STATE_END");
 }
 
@@ -804,152 +802,152 @@ void sendStates() {
 // ============================================================
 
 void processCommand(String command) {
-  command.trim();
+    command.trim();
 
 
-  if (command.length() == 0) {
-    return;
-  }
+    if (command.length() == 0) {
+        return;
+    }
 
 
-  Serial.print(
+    Serial.print(
     "Kommando: ");
 
-  Serial.println(command);
+    Serial.println(command);
 
 
-  // --------------------------------------------------------
-  // INFO
-  // --------------------------------------------------------
+    // --------------------------------------------------------
+    // INFO
+    // --------------------------------------------------------
 
-  if (command == "INFO") {
+    if (command == "INFO") {
 
-    sendInfo();
+        sendInfo();
 
-    return;
-  }
-
-
-  // --------------------------------------------------------
-  // GET
-  // --------------------------------------------------------
-
-  if (command == "GET") {
-
-    sendStates();
-
-    return;
-  }
+        return;
+    }
 
 
-  // --------------------------------------------------------
-  // SET
-  //
-  // SET|P1|Urlaub|bis 18.11.
-  // --------------------------------------------------------
+    // --------------------------------------------------------
+    // GET
+    // --------------------------------------------------------
 
-  if (!command.startsWith("SET|")) {
+    if (command == "GET") {
 
-    sendLine(
-      "ERR|UNKNOWN_COMMAND");
+        sendStates();
 
-    return;
-  }
+        return;
+    }
 
 
-  int separator1 =
+    // --------------------------------------------------------
+    // SET
+    //
+    // SET|P1|Urlaub|bis 18.11.
+    // --------------------------------------------------------
+
+    if (!command.startsWith("SET|")) {
+
+        sendLine(
+        "ERR|UNKNOWN_COMMAND");
+
+        return;
+    }
+
+
+    int separator1 =
     command.indexOf('|');
 
 
-  int separator2 =
+    int separator2 =
     command.indexOf(
-      '|',
-      separator1 + 1);
+    '|',
+    separator1 + 1);
 
 
-  int separator3 =
+    int separator3 =
     command.indexOf(
-      '|',
-      separator2 + 1);
+    '|',
+    separator2 + 1);
 
 
-  if (
+    if (
     separator2 < 0 || separator3 < 0) {
 
-    sendLine(
-      "ERR|INVALID_FORMAT");
+        sendLine(
+        "ERR|INVALID_FORMAT");
 
-    return;
-  }
+        return;
+    }
 
 
-  String personId =
+    String personId =
     command.substring(
-      separator1 + 1,
-      separator2);
+    separator1 + 1,
+    separator2);
 
 
-  String status =
+    String status =
     command.substring(
-      separator2 + 1,
-      separator3);
+    separator2 + 1,
+    separator3);
 
 
-  String text =
+    String text =
     command.substring(
-      separator3 + 1);
+    separator3 + 1);
 
 
-  personId.trim();
-  status.trim();
-  text.trim();
+    personId.trim();
+    status.trim();
+    text.trim();
 
 
-  int index =
+    int index =
     findPersonIndex(
-      personId);
+    personId);
 
 
-  if (index < 0) {
+    if (index < 0) {
 
-    sendLine(
-      String(
+        sendLine(
+        String(
         "ERR|UNKNOWN_PERSON|")
-      + personId);
+        + personId);
 
-    return;
-  }
+        return;
+    }
 
 
-  personState[index].status =
+    personState[index].status =
     status;
 
 
-  personState[index].text =
+    personState[index].text =
     text;
 
 
-  if (!saveState()) {
+    if (!saveState()) {
+
+        sendLine(
+        "ERR|SAVE_FAILED");
+
+        return;
+    }
+
 
     sendLine(
-      "ERR|SAVE_FAILED");
-
-    return;
-  }
-
-
-  sendLine(
     String("OK|") + personId);
 
 
-  sendLine(
+    sendLine(
     "REFRESHING");
 
 
-  updateDisplay();
+    updateDisplay();
 
 
-  sendLine(
+    sendLine(
     "READY");
 }
 
@@ -959,29 +957,29 @@ void processCommand(String command) {
 // ============================================================
 
 void bleuartRxCallback(
-  uint16_t connHandle) {
-  (void)connHandle;
+uint16_t connHandle) {
+    (void)connHandle;
 
 
-  while (
+    while (
     bleuart.available()) {
 
-    char c =
-      static_cast<char>(
+        char c =
+        static_cast<char>(
         bleuart.read());
 
 
-    if (
-      rxBuffer.length() < 512) {
+        if (
+        rxBuffer.length() < 512) {
 
-      rxBuffer += c;
+            rxBuffer += c;
+        }
     }
-  }
 
 
-  rxPending = true;
+    rxPending = true;
 
-  lastRxMillis =
+    lastRxMillis =
     millis();
 }
 
@@ -991,25 +989,25 @@ void bleuartRxCallback(
 // ============================================================
 
 void connectCallback(
-  uint16_t connHandle) {
-  BLEConnection* connection =
+uint16_t connHandle) {
+    BLEConnection* connection =
     Bluefruit.Connection(
-      connHandle);
+    connHandle);
 
 
-  char centralName[32] = { 0 };
+    char centralName[32] = { 0 };
 
 
-  connection->getPeerName(
+    connection->getPeerName(
     centralName,
     sizeof(centralName));
 
 
-  Serial.print(
+    Serial.print(
     "Verbunden mit: ");
 
 
-  Serial.println(
+    Serial.println(
     centralName);
 }
 
@@ -1019,13 +1017,13 @@ void connectCallback(
 // ============================================================
 
 void disconnectCallback(
-  uint16_t connHandle,
-  uint8_t reason) {
-  (void)connHandle;
-  (void)reason;
+uint16_t connHandle,
+uint8_t reason) {
+    (void)connHandle;
+    (void)reason;
 
 
-  Serial.println(
+    Serial.println(
     "BLE getrennt");
 }
 
@@ -1035,40 +1033,40 @@ void disconnectCallback(
 // ============================================================
 
 void startAdvertising() {
-  Bluefruit.Advertising.stop();
+    Bluefruit.Advertising.stop();
 
-  Bluefruit.Advertising.clearData();
+    Bluefruit.Advertising.clearData();
 
-  Bluefruit.ScanResponse.clearData();
+    Bluefruit.ScanResponse.clearData();
 
 
-  Bluefruit.Advertising.addFlags(
+    Bluefruit.Advertising.addFlags(
     BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
 
 
-  Bluefruit.Advertising.addTxPower();
+    Bluefruit.Advertising.addTxPower();
 
 
-  Bluefruit.Advertising.addService(
+    Bluefruit.Advertising.addService(
     bleuart);
 
 
-  Bluefruit.ScanResponse.addName();
+    Bluefruit.ScanResponse.addName();
 
 
-  Bluefruit.Advertising.restartOnDisconnect(
+    Bluefruit.Advertising.restartOnDisconnect(
     true);
 
 
-  Bluefruit.Advertising.setInterval(
+    Bluefruit.Advertising.setInterval(
     160,
     244);
 
 
-  Bluefruit.Advertising.start(0);
+    Bluefruit.Advertising.start(0);
 
 
-  Serial.println(
+    Serial.println(
     "BLE Advertising gestartet");
 }
 
@@ -1078,164 +1076,164 @@ void startAdvertising() {
 // ============================================================
 
 void setup() {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  delay(1000);
+    delay(1000);
 
 
-  Serial.println();
+    Serial.println();
 
-  Serial.println(
+    Serial.println(
     "================================");
 
-  Serial.println(
+    Serial.println(
     " DWD Raumschild");
 
-  Serial.println(
+    Serial.println(
     "================================");
 
 
-  // --------------------------------------------------------
-  // Defaults
-  // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Defaults
+    // --------------------------------------------------------
 
-  for (
+    for (
     size_t i = 0;
     i < PERSON_COUNT;
     i++) {
 
-    personState[i].status =
-      DEFAULT_STATUS;
+        personState[i].status =
+        DEFAULT_STATUS;
 
 
-    personState[i].text =
-      DEFAULT_TEXT;
-  }
+        personState[i].text =
+        DEFAULT_TEXT;
+    }
 
 
-  // --------------------------------------------------------
-  // Flash
-  // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Flash
+    // --------------------------------------------------------
 
-  Serial.println(
+    Serial.println(
     "Initialisiere internes Dateisystem ...");
 
 
-  if (!InternalFS.begin()) {
+    if (!InternalFS.begin()) {
 
-    Serial.println(
-      "FEHLER: InternalFS konnte nicht initialisiert werden");
+        Serial.println(
+        "FEHLER: InternalFS konnte nicht initialisiert werden");
 
-  } else {
+    } else {
 
-    Serial.println(
-      "InternalFS bereit");
-
-
-    loadState();
-  }
+        Serial.println(
+        "InternalFS bereit");
 
 
-  // --------------------------------------------------------
-  // Display
-  // --------------------------------------------------------
-
-  updateDisplay();
+        loadState();
+    }
 
 
-  // --------------------------------------------------------
-  // BLE
-  // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Display
+    // --------------------------------------------------------
 
-  // Adafruit verwendet dies auch im offiziellen
-  // BLE-UART-Beispiel.
-  //
-  // Muss VOR Bluefruit.begin() gesetzt werden.
+    updateDisplay();
 
-  Bluefruit.configPrphBandwidth(
+
+    // --------------------------------------------------------
+    // BLE
+    // --------------------------------------------------------
+
+    // Adafruit verwendet dies auch im offiziellen
+    // BLE-UART-Beispiel.
+    //
+    // Muss VOR Bluefruit.begin() gesetzt werden.
+
+    Bluefruit.configPrphBandwidth(
     BANDWIDTH_MAX);
 
 
-  Bluefruit.begin();
+    Bluefruit.begin();
 
 
-  Bluefruit.setTxPower(4);
+    Bluefruit.setTxPower(4);
 
 
-  Bluefruit.setName(
+    Bluefruit.setName(
     BLE_DEVICE_NAME);
 
 
-  Bluefruit.Periph.setConnectCallback(
+    Bluefruit.Periph.setConnectCallback(
     connectCallback);
 
 
-  Bluefruit.Periph.setDisconnectCallback(
+    Bluefruit.Periph.setDisconnectCallback(
     disconnectCallback);
 
 
-  bleuart.begin();
+    bleuart.begin();
 
 
-  bleuart.setRxCallback(
+    bleuart.setRxCallback(
     bleuartRxCallback);
 
 
-  startAdvertising();
+    startAdvertising();
 
 
-  // --------------------------------------------------------
-  // Log
-  // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Log
+    // --------------------------------------------------------
 
-  Serial.println();
+    Serial.println();
 
-  Serial.print(
+    Serial.print(
     "Raum : ");
 
-  Serial.println(
+    Serial.println(
     ROOM_NUMBER);
 
 
-  for (
+    for (
     size_t i = 0;
     i < PERSON_COUNT;
     i++) {
 
-    Serial.print(
-      PERSONS[i].id);
+        Serial.print(
+        PERSONS[i].id);
 
-    Serial.print(
-      " : ");
+        Serial.print(
+        " : ");
 
-    Serial.print(
-      PERSONS[i].name);
+        Serial.print(
+        PERSONS[i].name);
 
-    Serial.print(
-      " -> ");
+        Serial.print(
+        " -> ");
 
-    Serial.print(
-      personState[i].status);
+        Serial.print(
+        personState[i].status);
 
 
-    if (
-      personState[i].text.length() > 0) {
+        if (
+        personState[i].text.length() > 0) {
 
-      Serial.print(
-        " / ");
+            Serial.print(
+            " / ");
 
-      Serial.print(
-        personState[i].text);
+            Serial.print(
+            personState[i].text);
+        }
+
+
+        Serial.println();
     }
 
 
     Serial.println();
-  }
 
-
-  Serial.println();
-
-  Serial.println(
+    Serial.println(
     "Warte auf BLE ...");
 }
 
@@ -1245,25 +1243,25 @@ void setup() {
 // ============================================================
 
 void loop() {
-  /*
-     * Ein BLE-Kommando kann auf mehrere Pakete verteilt sein.
-     * Solange innerhalb von 60 ms weitere Bytes kommen,
-     * sammeln wir weiter.
-     */
+    /*
+       * Ein BLE-Kommando kann auf mehrere Pakete verteilt sein.
+       * Solange innerhalb von 60 ms weitere Bytes kommen,
+       * sammeln wir weiter.
+       */
 
-  if (
+    if (
     rxPending && millis() - lastRxMillis > 60) {
 
-    String command =
-      rxBuffer;
+        String command =
+        rxBuffer;
 
 
-    rxBuffer = "";
+        rxBuffer = "";
 
-    rxPending = false;
+        rxPending = false;
 
 
-    processCommand(
-      command);
-  }
+        processCommand(
+        command);
+    }
 }
