@@ -432,6 +432,41 @@
             border-radius: 8px;
         }
 
+        .battery-warning {
+            display: none;
+            margin-top: 10px;
+            padding: 9px 11px;
+
+            border-radius: 7px;
+
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .battery-warning.warning {
+            display: block;
+
+            color: var(--yellow);
+
+            border: 1px solid var(--yellow);
+        }
+
+        .battery-warning.critical {
+            display: block;
+
+            color: var(--red);
+
+            border: 1px solid var(--red);
+        }
+
+        .last-connected {
+            margin-top: 5px;
+
+            font-size: 0.75rem;
+
+            color: var(--gray);
+        }
+
     </style>
 </head>
 
@@ -484,6 +519,9 @@
         <div id="message">
             Bereit zum Verbinden.
         </div>
+        <div id="lastConnected"
+             class="last-connected">
+        </div>
 
 
         <div id="batteryPanel">
@@ -502,6 +540,9 @@
 
             <div class="battery-track">
                 <div id="batteryBar"></div>
+            </div>
+            <div id="batteryWarning"
+                 class="battery-warning">
             </div>
 
         </div>
@@ -691,6 +732,10 @@
     const batteryBar =
         document.getElementById("batteryBar");
 
+    const batteryWarning =
+        document.getElementById("batteryWarning");
+
+    const lastConnected = document.getElementById("lastConnected");
 
     const ownerCompactPanel =
         document.getElementById("ownerCompactPanel");
@@ -785,17 +830,52 @@
         );
 
 
+        batteryWarning.classList.remove(
+            "warning",
+            "critical"
+        );
+
+        batteryWarning.style.display =
+            "none";
+
+
+        // --------------------------------------------------------
+        // Bewertung anhand der realen Spannung
+        // --------------------------------------------------------
+
         if (batteryVoltage < 3.60) {
 
             batteryBar.classList.add(
                 "low"
             );
 
+
+            batteryWarning.textContent =
+                "Akku bald laden.";
+
+            batteryWarning.classList.add(
+                "critical"
+            );
+
+            batteryWarning.style.display =
+                "block";
+
         } else if (batteryVoltage < 3.80) {
 
             batteryBar.classList.add(
                 "warning"
             );
+
+
+            batteryWarning.textContent =
+                "Akkustand niedrig – bei Gelegenheit laden.";
+
+            batteryWarning.classList.add(
+                "warning"
+            );
+
+            batteryWarning.style.display =
+                "block";
         }
     }
 
@@ -1199,7 +1279,19 @@
 
 
         if (line === "STATE_END") {
+            const now =
+                new Date();
 
+
+            lastConnected.textContent =
+                "Zuletzt verbunden: " +
+                now.toLocaleTimeString(
+                    "de-DE",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
             rebuildOwnerSelect();
             updateOwnerDisplay();
             renderPeople();
