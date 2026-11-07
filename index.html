@@ -2,16 +2,19 @@
 <html lang="de">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
+    <meta name="theme-color" content="#174a7e">
+
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+
     <title>DWD Raumschild</title>
 
     <style>
-
         :root {
             --blue: #174a7e;
             --green: #287a3e;
@@ -20,13 +23,14 @@
             --gray: #666;
             --light-gray: #e5e5e5;
             --background: #f4f5f6;
+            --panel: #ffffff;
+            --text: #222;
+            --border: #ccc;
         }
-
 
         * {
             box-sizing: border-box;
         }
-
 
         body {
             margin: 0;
@@ -38,56 +42,43 @@
                 sans-serif;
 
             background: var(--background);
-            color: #222;
+            color: var(--text);
         }
-
 
         main {
             max-width: 600px;
             margin: 0 auto;
         }
 
-
         header {
             margin-bottom: 20px;
         }
 
-
         h1 {
             margin: 0;
-
             color: var(--blue);
             font-size: 1.8rem;
         }
 
-
         .header-info {
             margin-top: 6px;
-
             color: var(--gray);
             line-height: 1.4;
-
             overflow-wrap: anywhere;
         }
-
 
         #organizationTop {
             font-weight: 600;
         }
 
-
         #departmentTop {
             font-size: 0.9rem;
         }
 
-
         .panel {
-            background: white;
-
+            background: var(--panel);
             border-radius: 12px;
-
             padding: 18px;
-
             margin-bottom: 16px;
 
             box-shadow:
@@ -95,59 +86,75 @@
                 rgba(0, 0, 0, 0.08);
         }
 
-
         .connection-row {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-
         .connection-row button {
             flex: 1;
         }
 
-
         .dot {
             width: 12px;
             height: 12px;
-
             flex: 0 0 12px;
-
             border-radius: 50%;
-
             background: #999;
         }
-
 
         .dot.connected {
             background: var(--green);
         }
 
-
         button {
             border: 0;
-
             border-radius: 8px;
-
             padding: 12px 16px;
-
             font-size: 1rem;
             font-weight: 600;
-
             cursor: pointer;
         }
 
+        button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
 
         .primary {
             background: var(--blue);
             color: white;
         }
 
+        .secondary {
+            background: transparent;
+            color: var(--blue);
+            border: 1px solid var(--blue);
+        }
 
-        button:disabled {
-            opacity: 0.45;
-            cursor: default;
+        .small-button {
+            padding: 7px 11px;
+            font-size: 0.85rem;
+        }
+
+        #message {
+            min-height: 1.5em;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            overflow-wrap: anywhere;
+        }
+
+        .ok {
+            color: var(--green);
+        }
+
+        .error {
+            color: var(--red);
+        }
+
+        .info {
+            color: var(--blue);
         }
 
 
@@ -157,112 +164,124 @@
 
         #batteryPanel {
             display: none;
-
             margin-top: 16px;
             padding-top: 14px;
-
-            border-top: 1px solid #ddd;
+            border-top: 1px solid var(--border);
         }
-
 
         .battery-row {
             display: flex;
-
             justify-content: space-between;
             align-items: center;
-
             margin-bottom: 7px;
-
             font-size: 0.9rem;
         }
-
 
         .battery-label {
             font-weight: 600;
         }
 
-
         #batteryValue {
             color: var(--gray);
         }
 
-
         .battery-track {
             width: 100%;
             height: 9px;
-
             border-radius: 10px;
-
             background: var(--light-gray);
-
             overflow: hidden;
         }
-
 
         #batteryBar {
             height: 100%;
             width: 0%;
-
             border-radius: 10px;
-
             background: var(--green);
-
-            transition:
-                width 0.3s ease;
+            transition: width 0.3s ease;
         }
-
 
         #batteryBar.warning {
             background: var(--yellow);
         }
-
 
         #batteryBar.low {
             background: var(--red);
         }
 
 
+        /* ====================================================
+           Nutzer
+           ==================================================== */
+
+        #ownerSetupPanel,
+        #ownerCompactPanel,
+        #personsPanel {
+            display: none;
+        }
+
+        .owner-compact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .owner-info {
+            min-width: 0;
+        }
+
+        .owner-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 2px;
+        }
+
+        #ownerCompactName {
+            font-size: 1.05rem;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
         label {
             display: block;
-
             font-size: 0.85rem;
             font-weight: 600;
-
             margin: 12px 0 5px;
-
-            color: #444;
+            color: var(--text);
         }
 
-
-        input,
         select,
+        input,
         textarea {
-
             width: 100%;
-
-            border: 1px solid #bbb;
+            border: 1px solid var(--border);
             border-radius: 7px;
-
             padding: 10px;
-
             font: inherit;
-
-            background: white;
+            color: var(--text);
+            background: var(--panel);
         }
-
 
         textarea {
             min-height: 70px;
             resize: vertical;
         }
 
+        .owner-setup-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+
+        /* ====================================================
+           Personen
+           ==================================================== */
 
         details.person {
-
-            background: white;
-
+            background: var(--panel);
             border-radius: 12px;
-
             margin-bottom: 14px;
 
             box-shadow:
@@ -272,131 +291,107 @@
             overflow: hidden;
         }
 
-
         details.person[open] {
-            border:
-                1px solid
-                var(--blue);
+            border: 1px solid var(--blue);
         }
 
-
         summary {
-            padding:
-                16px 18px;
-
+            padding: 16px 18px;
             cursor: pointer;
-
             font-size: 1.15rem;
             font-weight: 700;
-
             color: var(--blue);
         }
 
-
         .person-body {
-            padding:
-                0 18px 18px;
+            padding: 0 18px 18px;
         }
-
 
         .person-status {
             font-size: 0.9rem;
-
             color: var(--gray);
-
             margin-top: -5px;
             margin-bottom: 8px;
-
             overflow-wrap: anywhere;
         }
-
 
         .update-button {
             width: 100%;
-
             margin-top: 16px;
-
             background: var(--blue);
-
             color: white;
         }
 
-
-        #message {
-            min-height: 1.5em;
-
-            margin-top: 12px;
-
-            font-size: 0.9rem;
-
-            overflow-wrap: anywhere;
-        }
-
-
-        .ok {
-            color: var(--green);
-        }
-
-
-        .error {
-            color: var(--red);
-        }
-
-
-        .info {
-            color: var(--blue);
-        }
-
-
-        #ownerPanel,
-        #personsPanel {
-            display: none;
-        }
-
-
         .organization {
-
             margin-top: 20px;
             padding: 12px;
-
             font-size: 0.78rem;
-
             text-align: center;
-
             color: var(--gray);
-
             line-height: 1.5;
-
             overflow-wrap: anywhere;
         }
-
 
         #organization {
             font-weight: 600;
         }
 
-
         #department {
             margin-top: 3px;
         }
 
-    </style>
 
+        /* ====================================================
+           PWA
+           ==================================================== */
+
+        #installButton {
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+
+        /* ====================================================
+           Dark Mode
+           ==================================================== */
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #111315;
+                --panel: #1e1e1e;
+                --text: #f0f0f0;
+                --gray: #b5b5b5;
+                --border: #555;
+                --light-gray: #292929;
+                --blue: #8ec5ff;
+            }
+
+            .primary,
+            .update-button {
+                background: #1c4b82;
+                color: white;
+            }
+
+            .secondary {
+                color: #8ec5ff;
+                border-color: #4778aa;
+            }
+        }
+
+    </style>
 </head>
 
 
 <body>
 
-
 <main>
-
 
     <header>
 
         <h1 id="title">
             DWD Raumschild
         </h1>
-
 
         <div class="header-info">
 
@@ -411,8 +406,11 @@
     </header>
 
 
-    <section class="panel">
+    <!-- ======================================================
+         Verbindung + Akku
+         ====================================================== -->
 
+    <section class="panel">
 
         <div class="connection-row">
 
@@ -420,7 +418,6 @@
                 id="connectionDot"
                 class="dot">
             </div>
-
 
             <button
                 id="connectButton"
@@ -436,8 +433,6 @@
         <div id="message"></div>
 
 
-        <!-- Akkuanzeige -->
-
         <div id="batteryPanel">
 
             <div class="battery-row">
@@ -452,30 +447,72 @@
 
             </div>
 
-
             <div class="battery-track">
-
                 <div id="batteryBar"></div>
-
             </div>
 
         </div>
 
 
+        <button
+            id="installButton"
+            class="secondary">
+
+            Als App installieren
+
+        </button>
+
     </section>
 
 
+    <!-- ======================================================
+         Kompakte Nutzeranzeige
+         ====================================================== -->
+
     <section
-        id="ownerPanel"
+        id="ownerCompactPanel"
         class="panel">
 
+        <div class="owner-compact">
+
+            <div class="owner-info">
+
+                <div class="owner-label">
+                    Nutzer dieses Smartphones
+                </div>
+
+                <div id="ownerCompactName">
+                    —
+                </div>
+
+            </div>
+
+            <button
+                id="changeOwnerButton"
+                class="secondary small-button">
+
+                Ändern
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         Nutzereinrichtung
+         ====================================================== -->
+
+    <section
+        id="ownerSetupPanel"
+        class="panel">
 
         <label for="ownerSelect">
 
             Dieses Smartphone wird normalerweise verwendet von:
 
         </label>
-
 
         <select id="ownerSelect">
 
@@ -486,14 +523,36 @@
         </select>
 
 
+        <div class="owner-setup-buttons">
+
+            <button
+                id="ownerDoneButton"
+                class="primary">
+
+                Übernehmen
+
+            </button>
+
+            <button
+                id="ownerCancelButton"
+                class="secondary">
+
+                Abbrechen
+
+            </button>
+
+        </div>
+
     </section>
 
 
+    <!-- ======================================================
+         Personen
+         ====================================================== -->
+
     <section id="personsPanel">
 
-
         <div id="persons"></div>
-
 
         <div class="organization">
 
@@ -503,25 +562,9 @@
 
         </div>
 
-
     </section>
 
-
 </main>
-
-
-<datalist id="statusSuggestions">
-
-    <option value="Anwesend">
-    <option value="Unterwegs">
-    <option value="Messfeld">
-    <option value="Besprechung">
-    <option value="Homeoffice">
-    <option value="Urlaub">
-    <option value="Dienstreise">
-    <option value="Abwesend">
-
-</datalist>
 
 
 <script>
@@ -555,7 +598,7 @@ let txCharacteristic = null;
 
 
 // ============================================================
-// Raumschild-Daten
+// Daten
 // ============================================================
 
 let roomNumber = "";
@@ -566,19 +609,14 @@ let department = "";
 let batteryVoltage = null;
 let batteryPercent = null;
 
-const people = new Map();
-
-
 let notificationBuffer = "";
 
 let refreshAfterUpdate = false;
 
+const people = new Map();
 
-const decoder =
-    new TextDecoder();
-
-const encoder =
-    new TextEncoder();
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 
 
 // ============================================================
@@ -586,63 +624,56 @@ const encoder =
 // ============================================================
 
 const connectButton =
-    document.getElementById(
-        "connectButton"
-    );
-
+    document.getElementById("connectButton");
 
 const connectionDot =
-    document.getElementById(
-        "connectionDot"
-    );
-
+    document.getElementById("connectionDot");
 
 const message =
-    document.getElementById(
-        "message"
-    );
+    document.getElementById("message");
+
+const batteryPanel =
+    document.getElementById("batteryPanel");
+
+const batteryValue =
+    document.getElementById("batteryValue");
+
+const batteryBar =
+    document.getElementById("batteryBar");
 
 
-const ownerPanel =
-    document.getElementById(
-        "ownerPanel"
-    );
+const ownerCompactPanel =
+    document.getElementById("ownerCompactPanel");
 
+const ownerCompactName =
+    document.getElementById("ownerCompactName");
+
+const changeOwnerButton =
+    document.getElementById("changeOwnerButton");
+
+
+const ownerSetupPanel =
+    document.getElementById("ownerSetupPanel");
 
 const ownerSelect =
-    document.getElementById(
-        "ownerSelect"
-    );
+    document.getElementById("ownerSelect");
+
+const ownerDoneButton =
+    document.getElementById("ownerDoneButton");
+
+const ownerCancelButton =
+    document.getElementById("ownerCancelButton");
 
 
 const personsPanel =
-    document.getElementById(
-        "personsPanel"
-    );
-
+    document.getElementById("personsPanel");
 
 const personsContainer =
-    document.getElementById(
-        "persons"
-    );
+    document.getElementById("persons");
 
 
-const batteryPanel =
-    document.getElementById(
-        "batteryPanel"
-    );
-
-
-const batteryValue =
-    document.getElementById(
-        "batteryValue"
-    );
-
-
-const batteryBar =
-    document.getElementById(
-        "batteryBar"
-    );
+const installButton =
+    document.getElementById("installButton");
 
 
 // ============================================================
@@ -653,16 +684,13 @@ function setMessage(
     text,
     type = "info")
 {
-    message.textContent =
-        text;
-
-    message.className =
-        type;
+    message.textContent = text;
+    message.className = type;
 }
 
 
 // ============================================================
-// Akku anzeigen
+// Akku
 // ============================================================
 
 function renderBattery()
@@ -671,7 +699,6 @@ function renderBattery()
         batteryVoltage === null ||
         batteryPercent === null
     ) {
-
         batteryPanel.style.display =
             "none";
 
@@ -710,11 +737,6 @@ function renderBattery()
     );
 
 
-    /*
-     * Bewertung bewusst anhand der Spannung,
-     * nicht nur anhand des groben Prozentwertes.
-     */
-
     if (batteryVoltage < 3.60) {
 
         batteryBar.classList.add(
@@ -730,8 +752,46 @@ function renderBattery()
 }
 
 
+function processBattery(fields)
+{
+    if (
+        fields.length < 2 ||
+        fields[1] === "NA"
+    ) {
+        batteryVoltage = null;
+        batteryPercent = null;
+
+        batteryPanel.style.display =
+            "none";
+
+        return;
+    }
+
+
+    const voltage =
+        Number(fields[1]);
+
+    const percent =
+        Number(fields[2]);
+
+
+    if (
+        !Number.isFinite(voltage) ||
+        !Number.isFinite(percent)
+    ) {
+        return;
+    }
+
+
+    batteryVoltage = voltage;
+    batteryPercent = percent;
+
+    renderBattery();
+}
+
+
 // ============================================================
-// Verbindung
+// Manuelle BLE-Verbindung
 // ============================================================
 
 async function connect()
@@ -750,11 +810,12 @@ async function connect()
     try {
 
         setMessage(
-            "Raumschild auswählen …"
+            "Raumschild auswählen …",
+            "info"
         );
 
 
-        device =
+        const selectedDevice =
             await navigator.bluetooth.requestDevice({
 
                 filters: [
@@ -770,96 +831,29 @@ async function connect()
             });
 
 
-        device.addEventListener(
-            "gattserverdisconnected",
-            handleDisconnected
+        localStorage.setItem(
+            "raumschild-last-device",
+            selectedDevice.id
         );
 
 
-        setMessage(
-            "Verbinde …"
-        );
-
-
-        server =
-            await device.gatt.connect();
-
-
-        const service =
-            await server.getPrimaryService(
-                NUS_SERVICE
-            );
-
-
-        rxCharacteristic =
-            await service.getCharacteristic(
-                NUS_RX
-            );
-
-
-        txCharacteristic =
-            await service.getCharacteristic(
-                NUS_TX
-            );
-
-
-        await txCharacteristic
-            .startNotifications();
-
-
-        txCharacteristic.addEventListener(
-            "characteristicvaluechanged",
-            handleNotification
-        );
-
-
-        connectionDot.classList.add(
-            "connected"
-        );
-
-
-        connectButton.textContent =
-            "Verbunden";
-
-
-        connectButton.disabled =
-            true;
-
-
-        people.clear();
-
-        roomNumber = "";
-        organization = "";
-        department = "";
-
-        batteryVoltage = null;
-        batteryPercent = null;
-
-        notificationBuffer = "";
-
-
-        batteryPanel.style.display =
-            "none";
-
-        ownerPanel.style.display =
-            "none";
-
-        personsPanel.style.display =
-            "none";
-
-
-        setMessage(
-            "Verbunden – lese Konfiguration …",
-            "info"
-        );
-
-
-        await sendCommand(
-            "INFO"
+        await connectToDevice(
+            selectedDevice
         );
 
     }
     catch (error) {
+
+        if (error.name === "NotFoundError") {
+
+            setMessage(
+                "Keine Verbindung hergestellt.",
+                "info"
+            );
+
+            return;
+        }
+
 
         console.error(error);
 
@@ -870,6 +864,206 @@ async function connect()
             "error"
         );
     }
+}
+
+
+// ============================================================
+// Gerät verbinden
+// ============================================================
+
+async function connectToDevice(
+    bluetoothDevice,
+    automatic = false)
+{
+    device =
+        bluetoothDevice;
+
+
+    device.addEventListener(
+        "gattserverdisconnected",
+        handleDisconnected
+    );
+
+
+    setMessage(
+        automatic
+            ? "Verbinde automatisch …"
+            : "Verbinde …",
+        "info"
+    );
+
+
+    server =
+        device.gatt.connected
+            ? device.gatt
+            : await device.gatt.connect();
+
+
+    const service =
+        await server.getPrimaryService(
+            NUS_SERVICE
+        );
+
+
+    rxCharacteristic =
+        await service.getCharacteristic(
+            NUS_RX
+        );
+
+
+    txCharacteristic =
+        await service.getCharacteristic(
+            NUS_TX
+        );
+
+
+    await txCharacteristic
+        .startNotifications();
+
+
+    txCharacteristic.addEventListener(
+        "characteristicvaluechanged",
+        handleNotification
+    );
+
+
+    connectionDot.classList.add(
+        "connected"
+    );
+
+
+    connectButton.textContent =
+        "Verbunden";
+
+
+    connectButton.disabled =
+        true;
+
+
+    resetRemoteData();
+
+
+    setMessage(
+        "Verbunden – lese Konfiguration …",
+        "info"
+    );
+
+
+    await sendCommand(
+        "INFO"
+    );
+}
+
+
+// ============================================================
+// Automatisch wiederverbinden
+// ============================================================
+
+async function tryAutoReconnect()
+{
+    if (
+        !navigator.bluetooth ||
+        !navigator.bluetooth.getDevices
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const devices =
+            await navigator.bluetooth.getDevices();
+
+
+        if (!devices.length) {
+            return;
+        }
+
+
+        const knownRoomSigns =
+            devices.filter(
+                item =>
+                    item.name &&
+                    item.name.startsWith(
+                        "RAUMSCHILD-"
+                    )
+            );
+
+
+        if (!knownRoomSigns.length) {
+            return;
+        }
+
+
+        const lastId =
+            localStorage.getItem(
+                "raumschild-last-device"
+            );
+
+
+        let candidate =
+            knownRoomSigns.find(
+                item =>
+                    item.id === lastId
+            );
+
+
+        if (!candidate) {
+            candidate =
+                knownRoomSigns[0];
+        }
+
+
+        await connectToDevice(
+            candidate,
+            true
+        );
+
+    }
+    catch (error) {
+
+        console.log(
+            "Automatische BLE-Verbindung nicht möglich:",
+            error
+        );
+
+
+        setMessage(
+            "Bereit zum Verbinden.",
+            "info"
+        );
+    }
+}
+
+
+// ============================================================
+// Remote-Daten zurücksetzen
+// ============================================================
+
+function resetRemoteData()
+{
+    people.clear();
+
+    roomNumber = "";
+    organization = "";
+    department = "";
+
+    batteryVoltage = null;
+    batteryPercent = null;
+
+    notificationBuffer = "";
+
+    batteryPanel.style.display =
+        "none";
+
+    ownerCompactPanel.style.display =
+        "none";
+
+    ownerSetupPanel.style.display =
+        "none";
+
+    personsPanel.style.display =
+        "none";
 }
 
 
@@ -964,7 +1158,7 @@ async function sendCommand(command)
 
 
 // ============================================================
-// BLE Notifications
+// Notifications
 // ============================================================
 
 function handleNotification(event)
@@ -1014,28 +1208,20 @@ function handleNotification(event)
 
 
         line =
-            line.replace(
-                /\r$/,
-                ""
-            );
-
-
-        line =
-            line.trim();
+            line
+                .replace(/\r$/, "")
+                .trim();
 
 
         if (line.length > 0) {
-
-            processLine(
-                line
-            );
+            processLine(line);
         }
     }
 }
 
 
 // ============================================================
-// Protokoll auswerten
+// Protokoll
 // ============================================================
 
 function processLine(line)
@@ -1065,12 +1251,8 @@ function processLine(line)
         );
 
 
-        sendCommand(
-            "GET"
-        ).catch(
-            handleCommandError
-        );
-
+        sendCommand("GET")
+            .catch(handleCommandError);
 
         return;
     }
@@ -1084,12 +1266,8 @@ function processLine(line)
     if (line === "STATE_END") {
 
         rebuildOwnerSelect();
-
+        updateOwnerDisplay();
         renderPeople();
-
-
-        ownerPanel.style.display =
-            "block";
 
 
         personsPanel.style.display =
@@ -1115,6 +1293,8 @@ function processLine(line)
         }
 
 
+        setUpdateButtons(true);
+
         return;
     }
 
@@ -1125,7 +1305,6 @@ function processLine(line)
 
     switch (fields[0]) {
 
-
         case "ROOM":
 
             roomNumber =
@@ -1134,14 +1313,11 @@ function processLine(line)
                     .join("|");
 
 
-            document.getElementById(
-                "title"
-            ).textContent =
-                "Raum " +
-                roomNumber;
-
-
-            loadOwnerPreference();
+            document
+                .getElementById("title")
+                .textContent =
+                    "Raum " +
+                    roomNumber;
 
             break;
 
@@ -1154,16 +1330,16 @@ function processLine(line)
                     .join("|");
 
 
-            document.getElementById(
-                "organization"
-            ).textContent =
-                organization;
+            document
+                .getElementById("organization")
+                .textContent =
+                    organization;
 
 
-            document.getElementById(
-                "organizationTop"
-            ).textContent =
-                organization;
+            document
+                .getElementById("organizationTop")
+                .textContent =
+                    organization;
 
             break;
 
@@ -1176,16 +1352,16 @@ function processLine(line)
                     .join("|");
 
 
-            document.getElementById(
-                "department"
-            ).textContent =
-                department;
+            document
+                .getElementById("department")
+                .textContent =
+                    department;
 
 
-            document.getElementById(
-                "departmentTop"
-            ).textContent =
-                department;
+            document
+                .getElementById("departmentTop")
+                .textContent =
+                    department;
 
             break;
 
@@ -1204,19 +1380,13 @@ function processLine(line)
 
         case "BAT":
 
-            processBattery(
-                fields
-            );
-
+            processBattery(fields);
             break;
 
 
         case "STATE":
 
-            processState(
-                fields
-            );
-
+            processState(fields);
             break;
 
 
@@ -1237,10 +1407,7 @@ function processLine(line)
                 "info"
             );
 
-
-            setUpdateButtons(
-                false
-            );
+            setUpdateButtons(false);
 
             break;
 
@@ -1251,11 +1418,8 @@ function processLine(line)
                 true;
 
 
-            sendCommand(
-                "GET"
-            ).catch(
-                handleCommandError
-            );
+            sendCommand("GET")
+                .catch(handleCommandError);
 
             break;
 
@@ -1271,9 +1435,7 @@ function processLine(line)
             );
 
 
-            setUpdateButtons(
-                true
-            );
+            setUpdateButtons(true);
 
             break;
     }
@@ -1281,91 +1443,7 @@ function processLine(line)
 
 
 // ============================================================
-// Akku-Protokoll
-//
-// BAT|3.88|55
-// ============================================================
-
-function processBattery(fields)
-{
-    if (
-        fields.length < 2 ||
-        fields[1] === "NA"
-    ) {
-
-        batteryVoltage =
-            null;
-
-        batteryPercent =
-            null;
-
-
-        batteryPanel.style.display =
-            "none";
-
-        return;
-    }
-
-
-    const voltage =
-        Number(
-            fields[1]
-        );
-
-
-    const percent =
-        Number(
-            fields[2]
-        );
-
-
-    if (
-        !Number.isFinite(voltage) ||
-        !Number.isFinite(percent)
-    ) {
-
-        return;
-    }
-
-
-    batteryVoltage =
-        voltage;
-
-
-    batteryPercent =
-        percent;
-
-
-    renderBattery();
-}
-
-
-// ============================================================
-// BLE Fehler
-// ============================================================
-
-function handleCommandError(error)
-{
-    console.error(
-        error
-    );
-
-
-    setMessage(
-        "Bluetooth-Fehler: " +
-        error.message,
-        "error"
-    );
-
-
-    setUpdateButtons(
-        true
-    );
-}
-
-
-// ============================================================
-// Person erzeugen
+// Person
 // ============================================================
 
 function ensurePerson(
@@ -1392,23 +1470,16 @@ function ensurePerson(
 }
 
 
-// ============================================================
-// STATE auswerten
-// ============================================================
-
 function processState(fields)
 {
     const id =
         fields[1];
 
-
     const name =
         fields[2] ?? "";
 
-
     const status =
         fields[3] ?? "";
-
 
     const text =
         fields
@@ -1429,14 +1500,13 @@ function processState(fields)
     person.status =
         status;
 
-
     person.text =
         text;
 }
 
 
 // ============================================================
-// Owner
+// Nutzer-Einstellung
 // ============================================================
 
 function ownerStorageKey()
@@ -1461,47 +1531,23 @@ function getPreferredPerson()
 }
 
 
-function loadOwnerPreference()
+function setPreferredPerson(id)
 {
-    const saved =
-        getPreferredPerson();
+    if (id) {
 
+        localStorage.setItem(
+            ownerStorageKey(),
+            id
+        );
 
-    if (saved) {
+    } else {
 
-        ownerSelect.value =
-            saved;
+        localStorage.removeItem(
+            ownerStorageKey()
+        );
     }
 }
 
-
-ownerSelect.addEventListener(
-    "change",
-    () => {
-
-        if (ownerSelect.value) {
-
-            localStorage.setItem(
-                ownerStorageKey(),
-                ownerSelect.value
-            );
-
-        } else {
-
-            localStorage.removeItem(
-                ownerStorageKey()
-            );
-        }
-
-
-        renderPeople();
-    }
-);
-
-
-// ============================================================
-// Owner-Auswahl
-// ============================================================
 
 function rebuildOwnerSelect()
 {
@@ -1527,7 +1573,6 @@ function rebuildOwnerSelect()
         option.value =
             person.id;
 
-
         option.textContent =
             person.name;
 
@@ -1549,8 +1594,114 @@ function rebuildOwnerSelect()
 }
 
 
+function updateOwnerDisplay()
+{
+    const preferred =
+        getPreferredPerson();
+
+
+    if (
+        preferred &&
+        people.has(preferred)
+    ) {
+
+        ownerCompactName.textContent =
+            people.get(preferred).name;
+
+
+        ownerCompactPanel.style.display =
+            "block";
+
+
+        ownerSetupPanel.style.display =
+            "none";
+
+    } else {
+
+        ownerCompactPanel.style.display =
+            "none";
+
+
+        ownerSetupPanel.style.display =
+            "block";
+
+
+        ownerCancelButton.style.display =
+            "none";
+    }
+}
+
+
+changeOwnerButton.addEventListener(
+    "click",
+    () => {
+
+        const preferred =
+            getPreferredPerson();
+
+
+        ownerSelect.value =
+            preferred;
+
+
+        ownerCompactPanel.style.display =
+            "none";
+
+
+        ownerSetupPanel.style.display =
+            "block";
+
+
+        ownerCancelButton.style.display =
+            preferred
+                ? "inline-block"
+                : "none";
+    }
+);
+
+
+ownerDoneButton.addEventListener(
+    "click",
+    () => {
+
+        const selected =
+            ownerSelect.value;
+
+
+        if (!selected) {
+
+            setMessage(
+                "Bitte zuerst einen Nutzer auswählen.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        setPreferredPerson(
+            selected
+        );
+
+
+        updateOwnerDisplay();
+        renderPeople();
+    }
+);
+
+
+ownerCancelButton.addEventListener(
+    "click",
+    () => {
+
+        rebuildOwnerSelect();
+        updateOwnerDisplay();
+    }
+);
+
+
 // ============================================================
-// Personen anzeigen
+// Personen darstellen
 // ============================================================
 
 function renderPeople()
@@ -1663,9 +1814,8 @@ function renderPeople()
 
             <input
                 id="status-${person.id}"
-                list="statusSuggestions"
                 maxlength="24"
-                autocomplete="off"
+                autocomplete="on"
             >
 
 
@@ -1676,7 +1826,8 @@ function renderPeople()
             <textarea
                 id="text-${person.id}"
                 maxlength="80"
-                placeholder="z. B. Westschenkel oder bis 18.11."
+                autocomplete="on"
+                placeholder="Freitext"
             ></textarea>
 
 
@@ -1709,18 +1860,22 @@ function renderPeople()
         );
 
 
-        document.getElementById(
-            "status-" +
-            person.id
-        ).value =
-            person.status;
+        document
+            .getElementById(
+                "status-" +
+                person.id
+            )
+            .value =
+                person.status;
 
 
-        document.getElementById(
-            "text-" +
-            person.id
-        ).value =
-            person.text;
+        document
+            .getElementById(
+                "text-" +
+                person.id
+            )
+            .value =
+                person.text;
     }
 
 
@@ -1744,10 +1899,6 @@ function renderPeople()
         );
 }
 
-
-// ============================================================
-// Statusanzeige
-// ============================================================
 
 function currentStatusText(person)
 {
@@ -1833,15 +1984,10 @@ async function updatePerson(id)
 
 
     status =
-        normalizeGerman(
-            status
-        );
-
+        normalizeGerman(status);
 
     text =
-        normalizeGerman(
-            text
-        );
+        normalizeGerman(text);
 
 
     const command =
@@ -1850,9 +1996,7 @@ async function updatePerson(id)
 
     try {
 
-        setUpdateButtons(
-            false
-        );
+        setUpdateButtons(false);
 
 
         setMessage(
@@ -1914,7 +2058,27 @@ function setUpdateButtons(enabled)
 
 
 // ============================================================
-// Pause
+// Fehler
+// ============================================================
+
+function handleCommandError(error)
+{
+    console.error(error);
+
+
+    setMessage(
+        "Bluetooth-Fehler: " +
+        error.message,
+        "error"
+    );
+
+
+    setUpdateButtons(true);
+}
+
+
+// ============================================================
+// Hilfsfunktion
 // ============================================================
 
 function delay(ms)
@@ -1930,7 +2094,99 @@ function delay(ms)
 
 
 // ============================================================
-// Connect
+// PWA
+// ============================================================
+
+let deferredInstallPrompt =
+    null;
+
+
+window.addEventListener(
+    "beforeinstallprompt",
+    event => {
+
+        event.preventDefault();
+
+        deferredInstallPrompt =
+            event;
+
+
+        installButton.style.display =
+            "block";
+    }
+);
+
+
+installButton.addEventListener(
+    "click",
+    async () => {
+
+        if (!deferredInstallPrompt) {
+            return;
+        }
+
+
+        deferredInstallPrompt.prompt();
+
+
+        await deferredInstallPrompt
+            .userChoice;
+
+
+        deferredInstallPrompt =
+            null;
+
+
+        installButton.style.display =
+            "none";
+    }
+);
+
+
+window.addEventListener(
+    "appinstalled",
+    () => {
+
+        installButton.style.display =
+            "none";
+    }
+);
+
+
+// ============================================================
+// Service Worker
+// ============================================================
+
+async function registerServiceWorker()
+{
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+
+
+    try {
+
+        await navigator.serviceWorker
+            .register("./sw.js");
+
+
+        console.log(
+            "Service Worker registriert"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Service Worker Fehler:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// Start
 // ============================================================
 
 connectButton.addEventListener(
@@ -1938,9 +2194,27 @@ connectButton.addEventListener(
     connect
 );
 
+
+window.addEventListener(
+    "load",
+    async () => {
+
+        await registerServiceWorker();
+
+
+        /*
+         * Kurze Verzögerung, damit die Seite
+         * erst vollständig dargestellt wird.
+         */
+
+        await delay(250);
+
+
+        await tryAutoReconnect();
+    }
+);
+
 </script>
 
-
 </body>
-
 </html>
