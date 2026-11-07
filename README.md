@@ -1,6 +1,6 @@
 ## User Interface for BLE E-Paper Room Signs
 
-### why this
+### about
 
 The room sign is designed for locations without a permanent power supply or Wi-Fi. An energy-efficient microcontroller powers an e-paper display that consumes energy only during updates and then retains the displayed content indefinitely without power.
 Updates are sent via Bluetooth from a smartphone. A small web app can be used to change the status and free-text entries for individual people. The data is stored in the microcontroller, ensuring it is retained even after a reboot.
