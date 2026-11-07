@@ -14,3 +14,8 @@ Updates are sent via Bluetooth from a smartphone. A small web app can be used to
 - soldering experience
 - 3D printing experience
 - any small parts
+
+### notes
+- BLE (luetooth low energy) web request required
+- works only with supported browsers like Chrome or Samsung Internet 
+- tested on Android OS only
