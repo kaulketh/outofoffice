@@ -1,5 +1,5 @@
 const CACHE_NAME =
-    "room-label-v1";
+    "outofoffice-v1";
 
 const APP_FILES = [
     "./",
