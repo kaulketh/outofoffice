@@ -363,6 +363,75 @@
                 border-color: #4778aa;
             }
         }
+
+        .maker-footer {
+            margin-top: 22px;
+            padding-top: 16px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            gap: 10px;
+
+            opacity: 0.7;
+        }
+
+
+        .maker-logo {
+            width: 36px;
+            height: 36px;
+
+            object-fit: contain;
+        }
+
+
+        .maker-text {
+            text-align: left;
+            line-height: 1.2;
+        }
+
+
+        .maker-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+
+            color: var(--blue);
+        }
+
+
+        .maker-tagline {
+            margin-top: 2px;
+
+            font-size: 0.68rem;
+
+            color: var(--gray);
+        }
+
+        .maker-banner-wrap {
+            margin-top: 24px;
+            padding-top: 16px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+            justify-content: center;
+        }
+
+
+        .maker-banner {
+            display: block;
+
+            width: min(100%, 520px);
+            height: auto;
+
+            opacity: 0.78;
+
+            border-radius: 8px;
+        }
+
     </style>
 </head>
 
@@ -533,11 +602,13 @@
         <div id="persons"></div>
 
 
-        <div class="organization">
-
-            <div id="organization"></div>
-
-            <div id="department"></div>
+        <div class="maker-banner-wrap">
+            <img
+                    src="./assets/Kaulketh%20Maker%20Projects%20Branding%20banner.png"
+                    alt="Kaulketh Maker Projects"
+                    class="maker-banner"
+            >
+        </div>
 
         </div>
 
