@@ -10,15 +10,15 @@
 
     <title>DWD Raumschild</title>
 
-
     <style>
 
         :root {
             --blue: #174a7e;
-            --blue-light: #e8f0f7;
             --green: #287a3e;
+            --yellow: #b47b00;
             --red: #b3261e;
             --gray: #666;
+            --light-gray: #e5e5e5;
             --background: #f4f5f6;
         }
 
@@ -37,9 +37,7 @@
                 -apple-system,
                 sans-serif;
 
-            background:
-                var(--background);
-
+            background: var(--background);
             color: #222;
         }
 
@@ -58,9 +56,7 @@
         h1 {
             margin: 0;
 
-            color:
-                var(--blue);
-
+            color: var(--blue);
             font-size: 1.8rem;
         }
 
@@ -68,9 +64,7 @@
         .header-info {
             margin-top: 6px;
 
-            color:
-                var(--gray);
-
+            color: var(--gray);
             line-height: 1.4;
 
             overflow-wrap: anywhere;
@@ -104,9 +98,7 @@
 
         .connection-row {
             display: flex;
-
             align-items: center;
-
             gap: 10px;
         }
 
@@ -129,8 +121,7 @@
 
 
         .dot.connected {
-            background:
-                var(--green);
+            background: var(--green);
         }
 
 
@@ -142,7 +133,6 @@
             padding: 12px 16px;
 
             font-size: 1rem;
-
             font-weight: 600;
 
             cursor: pointer;
@@ -150,17 +140,85 @@
 
 
         .primary {
-            background:
-                var(--blue);
-
+            background: var(--blue);
             color: white;
         }
 
 
         button:disabled {
             opacity: 0.45;
-
             cursor: default;
+        }
+
+
+        /* ====================================================
+           Akku
+           ==================================================== */
+
+        #batteryPanel {
+            display: none;
+
+            margin-top: 16px;
+            padding-top: 14px;
+
+            border-top: 1px solid #ddd;
+        }
+
+
+        .battery-row {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 7px;
+
+            font-size: 0.9rem;
+        }
+
+
+        .battery-label {
+            font-weight: 600;
+        }
+
+
+        #batteryValue {
+            color: var(--gray);
+        }
+
+
+        .battery-track {
+            width: 100%;
+            height: 9px;
+
+            border-radius: 10px;
+
+            background: var(--light-gray);
+
+            overflow: hidden;
+        }
+
+
+        #batteryBar {
+            height: 100%;
+            width: 0%;
+
+            border-radius: 10px;
+
+            background: var(--green);
+
+            transition:
+                width 0.3s ease;
+        }
+
+
+        #batteryBar.warning {
+            background: var(--yellow);
+        }
+
+
+        #batteryBar.low {
+            background: var(--red);
         }
 
 
@@ -168,11 +226,9 @@
             display: block;
 
             font-size: 0.85rem;
-
             font-weight: 600;
 
-            margin:
-                12px 0 5px;
+            margin: 12px 0 5px;
 
             color: #444;
         }
@@ -184,9 +240,7 @@
 
             width: 100%;
 
-            border:
-                1px solid #bbb;
-
+            border: 1px solid #bbb;
             border-radius: 7px;
 
             padding: 10px;
@@ -199,7 +253,6 @@
 
         textarea {
             min-height: 70px;
-
             resize: vertical;
         }
 
@@ -234,11 +287,9 @@
             cursor: pointer;
 
             font-size: 1.15rem;
-
             font-weight: 700;
 
-            color:
-                var(--blue);
+            color: var(--blue);
         }
 
 
@@ -251,11 +302,9 @@
         .person-status {
             font-size: 0.9rem;
 
-            color:
-                var(--gray);
+            color: var(--gray);
 
             margin-top: -5px;
-
             margin-bottom: 8px;
 
             overflow-wrap: anywhere;
@@ -267,8 +316,7 @@
 
             margin-top: 16px;
 
-            background:
-                var(--blue);
+            background: var(--blue);
 
             color: white;
         }
@@ -286,20 +334,17 @@
 
 
         .ok {
-            color:
-                var(--green);
+            color: var(--green);
         }
 
 
         .error {
-            color:
-                var(--red);
+            color: var(--red);
         }
 
 
         .info {
-            color:
-                var(--blue);
+            color: var(--blue);
         }
 
 
@@ -312,21 +357,17 @@
         .organization {
 
             margin-top: 20px;
-
             padding: 12px;
 
             font-size: 0.78rem;
 
             text-align: center;
 
-            color:
-                var(--gray);
+            color: var(--gray);
 
             line-height: 1.5;
 
             overflow-wrap: anywhere;
-
-            word-break: normal;
         }
 
 
@@ -393,6 +434,32 @@
 
 
         <div id="message"></div>
+
+
+        <!-- Akkuanzeige -->
+
+        <div id="batteryPanel">
+
+            <div class="battery-row">
+
+                <span class="battery-label">
+                    Akku
+                </span>
+
+                <span id="batteryValue">
+                    —
+                </span>
+
+            </div>
+
+
+            <div class="battery-track">
+
+                <div id="batteryBar"></div>
+
+            </div>
+
+        </div>
 
 
     </section>
@@ -496,13 +563,13 @@ let roomNumber = "";
 let organization = "";
 let department = "";
 
+let batteryVoltage = null;
+let batteryPercent = null;
+
 const people = new Map();
 
 
 let notificationBuffer = "";
-
-let loadingInfo = false;
-let loadingStates = false;
 
 let refreshAfterUpdate = false;
 
@@ -560,6 +627,24 @@ const personsContainer =
     );
 
 
+const batteryPanel =
+    document.getElementById(
+        "batteryPanel"
+    );
+
+
+const batteryValue =
+    document.getElementById(
+        "batteryValue"
+    );
+
+
+const batteryBar =
+    document.getElementById(
+        "batteryBar"
+    );
+
+
 // ============================================================
 // Meldung
 // ============================================================
@@ -573,6 +658,75 @@ function setMessage(
 
     message.className =
         type;
+}
+
+
+// ============================================================
+// Akku anzeigen
+// ============================================================
+
+function renderBattery()
+{
+    if (
+        batteryVoltage === null ||
+        batteryPercent === null
+    ) {
+
+        batteryPanel.style.display =
+            "none";
+
+        return;
+    }
+
+
+    batteryPanel.style.display =
+        "block";
+
+
+    batteryValue.textContent =
+        batteryVoltage.toFixed(2) +
+        " V · ca. " +
+        batteryPercent +
+        " %";
+
+
+    const percent =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                batteryPercent
+            )
+        );
+
+
+    batteryBar.style.width =
+        percent + "%";
+
+
+    batteryBar.classList.remove(
+        "warning",
+        "low"
+    );
+
+
+    /*
+     * Bewertung bewusst anhand der Spannung,
+     * nicht nur anhand des groben Prozentwertes.
+     */
+
+    if (batteryVoltage < 3.60) {
+
+        batteryBar.classList.add(
+            "low"
+        );
+
+    } else if (batteryVoltage < 3.80) {
+
+        batteryBar.classList.add(
+            "warning"
+        );
+    }
 }
 
 
@@ -678,8 +832,14 @@ async function connect()
         organization = "";
         department = "";
 
+        batteryVoltage = null;
+        batteryPercent = null;
+
         notificationBuffer = "";
 
+
+        batteryPanel.style.display =
+            "none";
 
         ownerPanel.style.display =
             "none";
@@ -762,13 +922,6 @@ async function sendCommand(command)
         encoder.encode(command);
 
 
-    /*
-     * Klein genug für die typische BLE-MTU.
-     *
-     * Die Firmware sammelt die Teile wieder,
-     * solange weniger als 60 ms Abstand besteht.
-     */
-
     const CHUNK_SIZE = 18;
 
 
@@ -837,13 +990,6 @@ function handleNotification(event)
         );
 
 
-    /*
-     * Eine BLE-Zeile kann aus mehreren
-     * Notifications bestehen.
-     *
-     * Erst bei "\n" ist sie vollständig.
-     */
-
     while (
         notificationBuffer.includes("\n")
     ) {
@@ -889,7 +1035,7 @@ function handleNotification(event)
 
 
 // ============================================================
-// Eine Protokollzeile auswerten
+// Protokoll auswerten
 // ============================================================
 
 function processLine(line)
@@ -900,13 +1046,7 @@ function processLine(line)
     );
 
 
-    // --------------------------------------------------------
-    // INFO beginnt
-    // --------------------------------------------------------
-
     if (line === "INFO_BEGIN") {
-
-        loadingInfo = true;
 
         setMessage(
             "Lese Raumschild-Konfiguration …",
@@ -917,14 +1057,7 @@ function processLine(line)
     }
 
 
-    // --------------------------------------------------------
-    // INFO vollständig
-    // --------------------------------------------------------
-
     if (line === "INFO_END") {
-
-        loadingInfo = false;
-
 
         setMessage(
             "Konfiguration gelesen – lese Status …",
@@ -943,26 +1076,12 @@ function processLine(line)
     }
 
 
-    // --------------------------------------------------------
-    // STATE beginnt
-    // --------------------------------------------------------
-
     if (line === "STATE_BEGIN") {
-
-        loadingStates = true;
-
         return;
     }
 
 
-    // --------------------------------------------------------
-    // STATE vollständig
-    // --------------------------------------------------------
-
     if (line === "STATE_END") {
-
-        loadingStates = false;
-
 
         rebuildOwnerSelect();
 
@@ -1007,10 +1126,6 @@ function processLine(line)
     switch (fields[0]) {
 
 
-        // ----------------------------------------------------
-        // Raum
-        // ----------------------------------------------------
-
         case "ROOM":
 
             roomNumber =
@@ -1022,7 +1137,7 @@ function processLine(line)
             document.getElementById(
                 "title"
             ).textContent =
-                "Raum " +
+                "Raumschild " +
                 roomNumber;
 
 
@@ -1030,10 +1145,6 @@ function processLine(line)
 
             break;
 
-
-        // ----------------------------------------------------
-        // Organisation
-        // ----------------------------------------------------
 
         case "ORG":
 
@@ -1057,10 +1168,6 @@ function processLine(line)
             break;
 
 
-        // ----------------------------------------------------
-        // Sachgebiet
-        // ----------------------------------------------------
-
         case "DEPT":
 
             department =
@@ -1083,10 +1190,6 @@ function processLine(line)
             break;
 
 
-        // ----------------------------------------------------
-        // Person
-        // ----------------------------------------------------
-
         case "PERSON":
 
             ensurePerson(
@@ -1099,9 +1202,14 @@ function processLine(line)
             break;
 
 
-        // ----------------------------------------------------
-        // Zustand
-        // ----------------------------------------------------
+        case "BAT":
+
+            processBattery(
+                fields
+            );
+
+            break;
+
 
         case "STATE":
 
@@ -1112,10 +1220,6 @@ function processLine(line)
             break;
 
 
-        // ----------------------------------------------------
-        // Update angenommen
-        // ----------------------------------------------------
-
         case "OK":
 
             setMessage(
@@ -1125,10 +1229,6 @@ function processLine(line)
 
             break;
 
-
-        // ----------------------------------------------------
-        // Display aktualisiert
-        // ----------------------------------------------------
 
         case "REFRESHING":
 
@@ -1145,16 +1245,7 @@ function processLine(line)
             break;
 
 
-        // ----------------------------------------------------
-        // Display fertig
-        // ----------------------------------------------------
-
         case "READY":
-
-            /*
-             * Den Zustand noch einmal direkt
-             * vom Schild lesen.
-             */
 
             refreshAfterUpdate =
                 true;
@@ -1168,10 +1259,6 @@ function processLine(line)
 
             break;
 
-
-        // ----------------------------------------------------
-        // Fehler
-        // ----------------------------------------------------
 
         case "ERR":
 
@@ -1194,7 +1281,67 @@ function processLine(line)
 
 
 // ============================================================
-// BLE-Fehler
+// Akku-Protokoll
+//
+// BAT|3.88|55
+// ============================================================
+
+function processBattery(fields)
+{
+    if (
+        fields.length < 2 ||
+        fields[1] === "NA"
+    ) {
+
+        batteryVoltage =
+            null;
+
+        batteryPercent =
+            null;
+
+
+        batteryPanel.style.display =
+            "none";
+
+        return;
+    }
+
+
+    const voltage =
+        Number(
+            fields[1]
+        );
+
+
+    const percent =
+        Number(
+            fields[2]
+        );
+
+
+    if (
+        !Number.isFinite(voltage) ||
+        !Number.isFinite(percent)
+    ) {
+
+        return;
+    }
+
+
+    batteryVoltage =
+        voltage;
+
+
+    batteryPercent =
+        percent;
+
+
+    renderBattery();
+}
+
+
+// ============================================================
+// BLE Fehler
 // ============================================================
 
 function handleCommandError(error)
@@ -1289,7 +1436,7 @@ function processState(fields)
 
 
 // ============================================================
-// Owner-Key
+// Owner
 // ============================================================
 
 function ownerStorageKey()
@@ -1304,10 +1451,6 @@ function ownerStorageKey()
 }
 
 
-// ============================================================
-// Bevorzugte Person
-// ============================================================
-
 function getPreferredPerson()
 {
     return (
@@ -1317,10 +1460,6 @@ function getPreferredPerson()
     );
 }
 
-
-// ============================================================
-// gespeicherte Auswahl laden
-// ============================================================
 
 function loadOwnerPreference()
 {
@@ -1335,10 +1474,6 @@ function loadOwnerPreference()
     }
 }
 
-
-// ============================================================
-// Owner geändert
-// ============================================================
 
 ownerSelect.addEventListener(
     "change",
@@ -1433,8 +1568,6 @@ function renderPeople()
             people.values()
         );
 
-
-    // Eigene Person zuerst
 
     if (preferred) {
 
@@ -1750,45 +1883,18 @@ function normalizeGerman(text)
 {
     return text
 
-        .replaceAll(
-            "ä",
-            "ae"
-        )
-
-        .replaceAll(
-            "ö",
-            "oe"
-        )
-
-        .replaceAll(
-            "ü",
-            "ue"
-        )
-
-        .replaceAll(
-            "Ä",
-            "Ae"
-        )
-
-        .replaceAll(
-            "Ö",
-            "Oe"
-        )
-
-        .replaceAll(
-            "Ü",
-            "Ue"
-        )
-
-        .replaceAll(
-            "ß",
-            "ss"
-        );
+        .replaceAll("ä", "ae")
+        .replaceAll("ö", "oe")
+        .replaceAll("ü", "ue")
+        .replaceAll("Ä", "Ae")
+        .replaceAll("Ö", "Oe")
+        .replaceAll("Ü", "Ue")
+        .replaceAll("ß", "ss");
 }
 
 
 // ============================================================
-// Buttons aktivieren / deaktivieren
+// Buttons
 // ============================================================
 
 function setUpdateButtons(enabled)
