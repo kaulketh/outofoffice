@@ -16,6 +16,6 @@ Updates are sent via Bluetooth from a smartphone. A small web app can be used to
 - any small parts
 
 ### notes
-- BLE (luetooth low energy) web request required
+- BLE (bluetooth low energy) web request required
 - works only with supported browsers like Chrome or Samsung Internet 
 - tested on Android OS only
