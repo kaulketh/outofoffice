@@ -1,252 +1,450 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
     <title>DWD Raumschild</title>
 
+
     <style>
+
         :root {
             --blue: #174a7e;
             --blue-light: #e8f0f7;
             --green: #287a3e;
             --red: #b3261e;
             --gray: #666;
-            --border: #d5d5d5;
             --background: #f4f5f6;
         }
+
 
         * {
             box-sizing: border-box;
         }
 
+
         body {
             margin: 0;
             padding: 20px;
-            font-family: system-ui, -apple-system, sans-serif;
-            background: var(--background);
+
+            font-family:
+                system-ui,
+                -apple-system,
+                sans-serif;
+
+            background:
+                var(--background);
+
             color: #222;
         }
+
 
         main {
             max-width: 600px;
             margin: 0 auto;
         }
 
+
         header {
             margin-bottom: 20px;
         }
 
+
         h1 {
             margin: 0;
-            color: var(--blue);
+
+            color:
+                var(--blue);
+
             font-size: 1.8rem;
         }
 
-        #subtitle {
-            margin-top: 5px;
-            color: var(--gray);
+
+        .header-info {
+            margin-top: 6px;
+
+            color:
+                var(--gray);
+
+            line-height: 1.4;
+
+            overflow-wrap: anywhere;
         }
+
+
+        #organizationTop {
+            font-weight: 600;
+        }
+
+
+        #departmentTop {
+            font-size: 0.9rem;
+        }
+
 
         .panel {
             background: white;
+
             border-radius: 12px;
+
             padding: 18px;
+
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.08);
         }
+
 
         .connection-row {
             display: flex;
+
             align-items: center;
+
             gap: 10px;
         }
+
 
         .connection-row button {
             flex: 1;
         }
 
+
         .dot {
             width: 12px;
             height: 12px;
+
+            flex: 0 0 12px;
+
             border-radius: 50%;
+
             background: #999;
         }
 
+
         .dot.connected {
-            background: var(--green);
+            background:
+                var(--green);
         }
+
 
         button {
             border: 0;
+
             border-radius: 8px;
+
             padding: 12px 16px;
+
             font-size: 1rem;
+
             font-weight: 600;
+
             cursor: pointer;
         }
 
+
         .primary {
-            background: var(--blue);
+            background:
+                var(--blue);
+
             color: white;
         }
 
-        .primary:disabled {
+
+        button:disabled {
             opacity: 0.45;
+
             cursor: default;
         }
 
+
         label {
             display: block;
+
             font-size: 0.85rem;
+
             font-weight: 600;
-            margin: 12px 0 5px;
+
+            margin:
+                12px 0 5px;
+
             color: #444;
         }
+
 
         input,
         select,
         textarea {
+
             width: 100%;
-            border: 1px solid #bbb;
+
+            border:
+                1px solid #bbb;
+
             border-radius: 7px;
+
             padding: 10px;
+
             font: inherit;
+
             background: white;
         }
+
 
         textarea {
             min-height: 70px;
+
             resize: vertical;
         }
 
+
         details.person {
+
             background: white;
+
             border-radius: 12px;
+
             margin-bottom: 14px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.08);
+
             overflow: hidden;
         }
 
+
         details.person[open] {
-            border: 1px solid var(--blue);
+            border:
+                1px solid
+                var(--blue);
         }
+
 
         summary {
-            padding: 16px 18px;
+            padding:
+                16px 18px;
+
             cursor: pointer;
+
             font-size: 1.15rem;
+
             font-weight: 700;
-            color: var(--blue);
+
+            color:
+                var(--blue);
         }
 
+
         .person-body {
-            padding: 0 18px 18px;
+            padding:
+                0 18px 18px;
         }
+
 
         .person-status {
             font-size: 0.9rem;
-            color: var(--gray);
+
+            color:
+                var(--gray);
+
             margin-top: -5px;
+
             margin-bottom: 8px;
+
+            overflow-wrap: anywhere;
         }
+
 
         .update-button {
             width: 100%;
+
             margin-top: 16px;
-            background: var(--blue);
+
+            background:
+                var(--blue);
+
             color: white;
         }
 
+
         #message {
             min-height: 1.5em;
+
             margin-top: 12px;
+
             font-size: 0.9rem;
+
+            overflow-wrap: anywhere;
         }
+
 
         .ok {
-            color: var(--green);
+            color:
+                var(--green);
         }
+
 
         .error {
-            color: var(--red);
+            color:
+                var(--red);
         }
 
+
         .info {
-            color: var(--blue);
+            color:
+                var(--blue);
         }
+
 
         #ownerPanel,
         #personsPanel {
             display: none;
         }
 
+
         .organization {
+
             margin-top: 20px;
+
+            padding: 12px;
+
             font-size: 0.78rem;
+
             text-align: center;
-            color: var(--gray);
+
+            color:
+                var(--gray);
+
             line-height: 1.5;
+
+            overflow-wrap: anywhere;
+
+            word-break: normal;
         }
+
+
+        #organization {
+            font-weight: 600;
+        }
+
+
+        #department {
+            margin-top: 3px;
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <main>
 
+
     <header>
-        <h1 id="title">DWD Raumschild</h1>
-        <div id="subtitle">Bluetooth-Verbindung herstellen</div>
+
+        <h1 id="title">
+            DWD Raumschild
+        </h1>
+
+
+        <div class="header-info">
+
+            <div id="organizationTop">
+                Bluetooth-Verbindung herstellen
+            </div>
+
+            <div id="departmentTop"></div>
+
+        </div>
+
     </header>
 
 
     <section class="panel">
 
-        <div class="connection-row">
-            <div id="connectionDot" class="dot"></div>
 
-            <button id="connectButton"
-                    class="primary">
+        <div class="connection-row">
+
+            <div
+                id="connectionDot"
+                class="dot">
+            </div>
+
+
+            <button
+                id="connectButton"
+                class="primary">
+
                 Raumschild verbinden
+
             </button>
+
         </div>
 
+
         <div id="message"></div>
+
 
     </section>
 
 
-    <section id="ownerPanel" class="panel">
+    <section
+        id="ownerPanel"
+        class="panel">
+
 
         <label for="ownerSelect">
+
             Dieses Smartphone wird normalerweise verwendet von:
+
         </label>
 
+
         <select id="ownerSelect">
-            <option value="">Bitte auswählen …</option>
+
+            <option value="">
+                Bitte auswählen …
+            </option>
+
         </select>
+
 
     </section>
 
 
     <section id="personsPanel">
 
+
         <div id="persons"></div>
 
+
         <div class="organization">
+
             <div id="organization"></div>
+
             <div id="department"></div>
+
         </div>
 
+
     </section>
+
 
 </main>
 
 
 <datalist id="statusSuggestions">
+
     <option value="Anwesend">
     <option value="Unterwegs">
     <option value="Messfeld">
@@ -255,10 +453,12 @@
     <option value="Urlaub">
     <option value="Dienstreise">
     <option value="Abwesend">
+
 </datalist>
 
 
 <script>
+
 "use strict";
 
 
@@ -293,17 +493,25 @@ let txCharacteristic = null;
 
 let roomNumber = "";
 
-const people = new Map();
-
 let organization = "";
 let department = "";
 
+const people = new Map();
 
-// Empfangspuffer für BLE-Notifications
+
 let notificationBuffer = "";
 
-const decoder = new TextDecoder();
-const encoder = new TextEncoder();
+let loadingInfo = false;
+let loadingStates = false;
+
+let refreshAfterUpdate = false;
+
+
+const decoder =
+    new TextDecoder();
+
+const encoder =
+    new TextEncoder();
 
 
 // ============================================================
@@ -311,35 +519,60 @@ const encoder = new TextEncoder();
 // ============================================================
 
 const connectButton =
-    document.getElementById("connectButton");
+    document.getElementById(
+        "connectButton"
+    );
+
 
 const connectionDot =
-    document.getElementById("connectionDot");
+    document.getElementById(
+        "connectionDot"
+    );
+
 
 const message =
-    document.getElementById("message");
+    document.getElementById(
+        "message"
+    );
+
 
 const ownerPanel =
-    document.getElementById("ownerPanel");
+    document.getElementById(
+        "ownerPanel"
+    );
+
 
 const ownerSelect =
-    document.getElementById("ownerSelect");
+    document.getElementById(
+        "ownerSelect"
+    );
+
 
 const personsPanel =
-    document.getElementById("personsPanel");
+    document.getElementById(
+        "personsPanel"
+    );
+
 
 const personsContainer =
-    document.getElementById("persons");
+    document.getElementById(
+        "persons"
+    );
 
 
 // ============================================================
-// Meldungen
+// Meldung
 // ============================================================
 
-function setMessage(text, type = "info")
+function setMessage(
+    text,
+    type = "info")
 {
-    message.textContent = text;
-    message.className = type;
+    message.textContent =
+        text;
+
+    message.className =
+        type;
 }
 
 
@@ -372,7 +605,8 @@ async function connect()
 
                 filters: [
                     {
-                        namePrefix: "RAUMSCHILD-"
+                        namePrefix:
+                            "RAUMSCHILD-"
                     }
                 ],
 
@@ -415,9 +649,8 @@ async function connect()
             );
 
 
-        // Antworten vom XIAO abonnieren
-
-        await txCharacteristic.startNotifications();
+        await txCharacteristic
+            .startNotifications();
 
 
         txCharacteristic.addEventListener(
@@ -439,36 +672,37 @@ async function connect()
             true;
 
 
-        setMessage(
-            "Verbunden – lese Raumschild …",
-            "ok"
-        );
-
-
-        // Alte Daten entfernen
-
         people.clear();
 
         roomNumber = "";
         organization = "";
         department = "";
 
-
-        // Konfiguration lesen
-
-        await sendCommand("INFO");
+        notificationBuffer = "";
 
 
-        // Kurz warten, dann aktuelle Zustände lesen
+        ownerPanel.style.display =
+            "none";
 
-        await delay(250);
+        personsPanel.style.display =
+            "none";
 
-        await sendCommand("GET");
+
+        setMessage(
+            "Verbunden – lese Konfiguration …",
+            "info"
+        );
+
+
+        await sendCommand(
+            "INFO"
+        );
 
     }
     catch (error) {
 
         console.error(error);
+
 
         setMessage(
             "Verbindung fehlgeschlagen: " +
@@ -524,19 +758,18 @@ async function sendCommand(command)
     }
 
 
-    /*
-     * BLE kann bei kleiner MTU nur ungefähr 20 Nutzbytes
-     * pro Paket transportieren.
-     *
-     * Deshalb senden wir längere Befehle stückweise.
-     * Die Firmware sammelt die Pakete wieder zusammen.
-     */
-
     const data =
         encoder.encode(command);
 
 
-    const CHUNK_SIZE = 20;
+    /*
+     * Klein genug für die typische BLE-MTU.
+     *
+     * Die Firmware sammelt die Teile wieder,
+     * solange weniger als 60 ms Abstand besteht.
+     */
+
+    const CHUNK_SIZE = 18;
 
 
     for (
@@ -553,7 +786,8 @@ async function sendCommand(command)
 
 
         if (
-            rxCharacteristic.properties
+            rxCharacteristic
+                .properties
                 .writeWithoutResponse
         ) {
 
@@ -571,13 +805,7 @@ async function sendCommand(command)
         }
 
 
-        /*
-         * Kurze Pause:
-         * deutlich unter den 60 ms der Firmware,
-         * aber genug für eine saubere Paketfolge.
-         */
-
-        await delay(10);
+        await delay(12);
     }
 }
 
@@ -603,43 +831,65 @@ function handleNotification(event)
     notificationBuffer +=
         decoder.decode(
             bytes,
-            { stream: true }
+            {
+                stream: true
+            }
         );
 
 
-    // BLEUart.println() beendet Zeilen mit \n
+    /*
+     * Eine BLE-Zeile kann aus mehreren
+     * Notifications bestehen.
+     *
+     * Erst bei "\n" ist sie vollständig.
+     */
 
     while (
         notificationBuffer.includes("\n")
     ) {
 
         const position =
-            notificationBuffer.indexOf("\n");
+            notificationBuffer.indexOf(
+                "\n"
+            );
 
 
         let line =
-            notificationBuffer
-                .slice(0, position)
-                .replace(/\r$/, "");
+            notificationBuffer.slice(
+                0,
+                position
+            );
 
 
         notificationBuffer =
-            notificationBuffer
-                .slice(position + 1);
+            notificationBuffer.slice(
+                position + 1
+            );
 
 
-        line = line.trim();
+        line =
+            line.replace(
+                /\r$/,
+                ""
+            );
+
+
+        line =
+            line.trim();
 
 
         if (line.length > 0) {
-            processLine(line);
+
+            processLine(
+                line
+            );
         }
     }
 }
 
 
 // ============================================================
-// Antwort der Firmware auswerten
+// Eine Protokollzeile auswerten
 // ============================================================
 
 function processLine(line)
@@ -650,11 +900,112 @@ function processLine(line)
     );
 
 
+    // --------------------------------------------------------
+    // INFO beginnt
+    // --------------------------------------------------------
+
+    if (line === "INFO_BEGIN") {
+
+        loadingInfo = true;
+
+        setMessage(
+            "Lese Raumschild-Konfiguration …",
+            "info"
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // INFO vollständig
+    // --------------------------------------------------------
+
+    if (line === "INFO_END") {
+
+        loadingInfo = false;
+
+
+        setMessage(
+            "Konfiguration gelesen – lese Status …",
+            "info"
+        );
+
+
+        sendCommand(
+            "GET"
+        ).catch(
+            handleCommandError
+        );
+
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // STATE beginnt
+    // --------------------------------------------------------
+
+    if (line === "STATE_BEGIN") {
+
+        loadingStates = true;
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // STATE vollständig
+    // --------------------------------------------------------
+
+    if (line === "STATE_END") {
+
+        loadingStates = false;
+
+
+        rebuildOwnerSelect();
+
+        renderPeople();
+
+
+        ownerPanel.style.display =
+            "block";
+
+
+        personsPanel.style.display =
+            "block";
+
+
+        if (refreshAfterUpdate) {
+
+            setMessage(
+                "Raumschild wurde aktualisiert.",
+                "ok"
+            );
+
+            refreshAfterUpdate =
+                false;
+
+        } else {
+
+            setMessage(
+                "Raumschild vollständig geladen.",
+                "ok"
+            );
+        }
+
+
+        return;
+    }
+
+
     const fields =
         line.split("|");
 
 
     switch (fields[0]) {
+
 
         // ----------------------------------------------------
         // Raum
@@ -663,13 +1014,17 @@ function processLine(line)
         case "ROOM":
 
             roomNumber =
-                fields[1] ?? "";
+                fields
+                    .slice(1)
+                    .join("|");
+
 
             document.getElementById(
                 "title"
             ).textContent =
                 "Raumschild " +
                 roomNumber;
+
 
             loadOwnerPreference();
 
@@ -683,10 +1038,19 @@ function processLine(line)
         case "ORG":
 
             organization =
-                fields.slice(1).join("|");
+                fields
+                    .slice(1)
+                    .join("|");
+
 
             document.getElementById(
                 "organization"
+            ).textContent =
+                organization;
+
+
+            document.getElementById(
+                "organizationTop"
             ).textContent =
                 organization;
 
@@ -700,10 +1064,19 @@ function processLine(line)
         case "DEPT":
 
             department =
-                fields.slice(1).join("|");
+                fields
+                    .slice(1)
+                    .join("|");
+
 
             document.getElementById(
                 "department"
+            ).textContent =
+                department;
+
+
+            document.getElementById(
+                "departmentTop"
             ).textContent =
                 department;
 
@@ -711,32 +1084,30 @@ function processLine(line)
 
 
         // ----------------------------------------------------
-        // Person 1
-        // PERSON|P1|*
+        // Person
         // ----------------------------------------------------
 
         case "PERSON":
 
             ensurePerson(
                 fields[1],
-                fields.slice(2).join("|")
+                fields
+                    .slice(2)
+                    .join("|")
             );
-
-            rebuildOwnerSelect();
-            renderPeople();
 
             break;
 
 
         // ----------------------------------------------------
         // Zustand
-        //
-        // STATE|P1|*|*|*
         // ----------------------------------------------------
 
         case "STATE":
 
-            processState(fields);
+            processState(
+                fields
+            );
 
             break;
 
@@ -756,7 +1127,7 @@ function processLine(line)
 
 
         // ----------------------------------------------------
-        // Display wird aktualisiert
+        // Display aktualisiert
         // ----------------------------------------------------
 
         case "REFRESHING":
@@ -766,40 +1137,56 @@ function processLine(line)
                 "info"
             );
 
-            setUpdateButtons(false);
+
+            setUpdateButtons(
+                false
+            );
 
             break;
 
 
         // ----------------------------------------------------
-        // fertig
+        // Display fertig
         // ----------------------------------------------------
 
         case "READY":
 
-            setMessage(
-                "Raumschild wurde aktualisiert.",
-                "ok"
-            );
+            /*
+             * Den Zustand noch einmal direkt
+             * vom Schild lesen.
+             */
 
-            setUpdateButtons(true);
+            refreshAfterUpdate =
+                true;
+
+
+            sendCommand(
+                "GET"
+            ).catch(
+                handleCommandError
+            );
 
             break;
 
 
         // ----------------------------------------------------
-        // Firmwarefehler
+        // Fehler
         // ----------------------------------------------------
 
         case "ERR":
 
             setMessage(
                 "Raumschild meldet Fehler: " +
-                fields.slice(1).join(" "),
+                fields
+                    .slice(1)
+                    .join(" "),
                 "error"
             );
 
-            setUpdateButtons(true);
+
+            setUpdateButtons(
+                true
+            );
 
             break;
     }
@@ -807,10 +1194,36 @@ function processLine(line)
 
 
 // ============================================================
+// BLE-Fehler
+// ============================================================
+
+function handleCommandError(error)
+{
+    console.error(
+        error
+    );
+
+
+    setMessage(
+        "Bluetooth-Fehler: " +
+        error.message,
+        "error"
+    );
+
+
+    setUpdateButtons(
+        true
+    );
+}
+
+
+// ============================================================
 // Person erzeugen
 // ============================================================
 
-function ensurePerson(id, name)
+function ensurePerson(
+    id,
+    name)
 {
     if (!people.has(id)) {
 
@@ -841,14 +1254,19 @@ function processState(fields)
     const id =
         fields[1];
 
+
     const name =
         fields[2] ?? "";
+
 
     const status =
         fields[3] ?? "";
 
+
     const text =
-        fields.slice(4).join("|");
+        fields
+            .slice(4)
+            .join("|");
 
 
     ensurePerson(
@@ -864,48 +1282,45 @@ function processState(fields)
     person.status =
         status;
 
+
     person.text =
         text;
-
-
-    rebuildOwnerSelect();
-    renderPeople();
-
-
-    ownerPanel.style.display =
-        "block";
-
-    personsPanel.style.display =
-        "block";
-
-
-    document.getElementById(
-        "subtitle"
-    ).textContent =
-        organization || "Bluetooth-Raumschild";
 }
 
 
 // ============================================================
-// Dieses Handy gehört zu ...
+// Owner-Key
 // ============================================================
 
 function ownerStorageKey()
 {
     return (
         "raumschild-owner-" +
-        (roomNumber || "default")
+        (
+            roomNumber ||
+            "default"
+        )
     );
 }
 
 
+// ============================================================
+// Bevorzugte Person
+// ============================================================
+
 function getPreferredPerson()
 {
-    return localStorage.getItem(
-        ownerStorageKey()
-    ) || "";
+    return (
+        localStorage.getItem(
+            ownerStorageKey()
+        ) || ""
+    );
 }
 
+
+// ============================================================
+// gespeicherte Auswahl laden
+// ============================================================
 
 function loadOwnerPreference()
 {
@@ -914,11 +1329,16 @@ function loadOwnerPreference()
 
 
     if (saved) {
+
         ownerSelect.value =
             saved;
     }
 }
 
+
+// ============================================================
+// Owner geändert
+// ============================================================
 
 ownerSelect.addEventListener(
     "change",
@@ -945,7 +1365,7 @@ ownerSelect.addEventListener(
 
 
 // ============================================================
-// Owner-Auswahl aufbauen
+// Owner-Auswahl
 // ============================================================
 
 function rebuildOwnerSelect()
@@ -959,7 +1379,8 @@ function rebuildOwnerSelect()
 
 
     for (
-        const person of people.values()
+        const person
+        of people.values()
     ) {
 
         const option =
@@ -970,6 +1391,7 @@ function rebuildOwnerSelect()
 
         option.value =
             person.id;
+
 
         option.textContent =
             person.name;
@@ -993,7 +1415,7 @@ function rebuildOwnerSelect()
 
 
 // ============================================================
-// Personenkarten zeichnen
+// Personen anzeigen
 // ============================================================
 
 function renderPeople()
@@ -1021,11 +1443,17 @@ function renderPeople()
 
                 if (
                     a.id === preferred
-                ) return -1;
+                ) {
+                    return -1;
+                }
+
 
                 if (
                     b.id === preferred
-                ) return 1;
+                ) {
+                    return 1;
+                }
+
 
                 return 0;
             }
@@ -1034,7 +1462,8 @@ function renderPeople()
 
 
     for (
-        const person of list
+        const person
+        of list
     ) {
 
         const details =
@@ -1046,12 +1475,6 @@ function renderPeople()
         details.className =
             "person";
 
-
-        /*
-         * Eigener Eintrag standardmäßig geöffnet.
-         * Andere Person bleibt zu,
-         * kann aber jederzeit geöffnet werden.
-         */
 
         if (
             !preferred ||
@@ -1099,7 +1522,8 @@ function renderPeople()
             );
 
 
-        body.innerHTML += `
+        body.innerHTML = `
+
             <label>
                 Status
             </label>
@@ -1111,6 +1535,7 @@ function renderPeople()
                 autocomplete="off"
             >
 
+
             <label>
                 Zusatztext
             </label>
@@ -1121,6 +1546,7 @@ function renderPeople()
                 placeholder="z. B. Westschenkel oder bis 18.11."
             ></textarea>
 
+
             <button
                 class="update-button"
                 data-person="${person.id}"
@@ -1130,13 +1556,13 @@ function renderPeople()
         `;
 
 
-        details.appendChild(
-            summary
+        body.prepend(
+            current
         );
 
 
-        body.prepend(
-            current
+        details.appendChild(
+            summary
         );
 
 
@@ -1151,13 +1577,15 @@ function renderPeople()
 
 
         document.getElementById(
-            "status-" + person.id
+            "status-" +
+            person.id
         ).value =
             person.status;
 
 
         document.getElementById(
-            "text-" + person.id
+            "text-" +
+            person.id
         ).value =
             person.text;
     }
@@ -1174,7 +1602,9 @@ function renderPeople()
                     "click",
                     () =>
                         updatePerson(
-                            button.dataset.person
+                            button
+                                .dataset
+                                .person
                         )
                 );
             }
@@ -1183,14 +1613,17 @@ function renderPeople()
 
 
 // ============================================================
-// Aktuellen Status als Text
+// Statusanzeige
 // ============================================================
 
 function currentStatusText(person)
 {
     let result =
         "Aktuell: " +
-        (person.status || "–");
+        (
+            person.status ||
+            "–"
+        );
 
 
     if (person.text) {
@@ -1206,7 +1639,7 @@ function currentStatusText(person)
 
 
 // ============================================================
-// Eine Person aktualisieren
+// Person aktualisieren
 // ============================================================
 
 async function updatePerson(id)
@@ -1221,20 +1654,22 @@ async function updatePerson(id)
 
 
     let status =
-        document.getElementById(
-            "status-" + id
-        ).value.trim();
+        document
+            .getElementById(
+                "status-" + id
+            )
+            .value
+            .trim();
 
 
     let text =
-        document.getElementById(
-            "text-" + id
-        ).value.trim();
+        document
+            .getElementById(
+                "text-" + id
+            )
+            .value
+            .trim();
 
-
-    // --------------------------------------------------------
-    // Unser BLE-Protokoll verwendet "|" als Trenner
-    // --------------------------------------------------------
 
     if (
         status.includes("|") ||
@@ -1250,8 +1685,6 @@ async function updatePerson(id)
     }
 
 
-    // Zeilenumbrüche entfernen
-
     status =
         status.replace(
             /[\r\n]+/g,
@@ -1265,11 +1698,6 @@ async function updatePerson(id)
             " "
         );
 
-
-    /*
-     * Die aktuell verwendeten GFX-Fonts sind ASCII-orientiert.
-     * Deutsche Sonderzeichen deshalb zunächst transliterieren.
-     */
 
     status =
         normalizeGerman(
@@ -1304,51 +1732,63 @@ async function updatePerson(id)
             command
         );
 
-
-        /*
-         * Der endgültige Zustand kommt anschließend
-         * mit OK / REFRESHING / READY von der Firmware.
-         */
-
     }
     catch (error) {
 
-        console.error(error);
-
-
-        setMessage(
-            "Senden fehlgeschlagen: " +
-            error.message,
-            "error"
-        );
-
-
-        setUpdateButtons(
-            true
+        handleCommandError(
+            error
         );
     }
 }
 
 
 // ============================================================
-// Deutsche Sonderzeichen
+// Sonderzeichen
 // ============================================================
 
 function normalizeGerman(text)
 {
     return text
-        .replaceAll("ä", "ae")
-        .replaceAll("ö", "oe")
-        .replaceAll("ü", "ue")
-        .replaceAll("Ä", "Ae")
-        .replaceAll("Ö", "Oe")
-        .replaceAll("Ü", "Ue")
-        .replaceAll("ß", "ss");
+
+        .replaceAll(
+            "ä",
+            "ae"
+        )
+
+        .replaceAll(
+            "ö",
+            "oe"
+        )
+
+        .replaceAll(
+            "ü",
+            "ue"
+        )
+
+        .replaceAll(
+            "Ä",
+            "Ae"
+        )
+
+        .replaceAll(
+            "Ö",
+            "Oe"
+        )
+
+        .replaceAll(
+            "Ü",
+            "Ue"
+        )
+
+        .replaceAll(
+            "ß",
+            "ss"
+        );
 }
 
 
 // ============================================================
-// Update-Buttons
+// Buttons aktivieren / deaktivieren
 // ============================================================
 
 function setUpdateButtons(enabled)
@@ -1359,6 +1799,7 @@ function setUpdateButtons(enabled)
         )
         .forEach(
             button => {
+
                 button.disabled =
                     !enabled;
             }
@@ -1367,7 +1808,7 @@ function setUpdateButtons(enabled)
 
 
 // ============================================================
-// kleine Pause
+// Pause
 // ============================================================
 
 function delay(ms)
@@ -1383,7 +1824,7 @@ function delay(ms)
 
 
 // ============================================================
-// Connect Button
+// Connect
 // ============================================================
 
 connectButton.addEventListener(
@@ -1393,5 +1834,7 @@ connectButton.addEventListener(
 
 </script>
 
+
 </body>
+
 </html>
