@@ -1,0 +1,26 @@
+### assignment
+PWR   Brown    D5       Turn HAT on/off
+BUSY  Purple   D4       Display → Controller
+RST   Gray     D3       Reset
+DC    Green    D2       Data/Command
+CS    Orange   D1       Chip Select
+CLK   Yellow   D8/SCK   SPI Clock
+DIN   Blue	   D10/MOSI SPI Data
+GND   Black    GND      Ground
+VCC   Red      3V3      Power Supply
+
+### wiring
+XIAO nRF52840                 Waveshare HAT Rev2.3
+3V3   ─────── red ──────────── VCC
+GND   ─────── black ────────── GND
+D10   ─────── blue ─────────── DIN
+D8    ─────── yellow ───────── CLK
+D1    ─────── orange ───────── CS
+D2    ─────── green ────────── DC
+D3    ─────── gray ─────────── RST
+D4    ─────── purple ───────── BUSY
+D5    ─────── brown ────────── PWR
+
+### HAT settings
+Display Config   → B
+Interface Config → 0   (4-line SPI)
