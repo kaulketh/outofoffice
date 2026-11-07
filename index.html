@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>DWD Raumschild</title>
+
+    <style>
+        :root {
+            --blue: #174a7e;
+            --blue-light: #e8f0f7;
+            --green: #287a3e;
+            --red: #b3261e;
+            --gray: #666;
+            --border: #d5d5d5;
+            --background: #f4f5f6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--background);
+            color: #222;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--blue);
+            font-size: 1.8rem;
+        }
+
+        #subtitle {
+            margin-top: 5px;
+            color: var(--gray);
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .connection-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .connection-row button {
+            flex: 1;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #999;
+        }
+
+        .dot.connected {
+            background: var(--green);
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .primary:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 12px 0 5px;
+            color: #444;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #bbb;
+            border-radius: 7px;
+            padding: 10px;
+            font: inherit;
+            background: white;
+        }
+
+        textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        details.person {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        details.person[open] {
+            border: 1px solid var(--blue);
+        }
+
+        summary {
+            padding: 16px 18px;
+            cursor: pointer;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        .person-body {
+            padding: 0 18px 18px;
+        }
+
+        .person-status {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: -5px;
+            margin-bottom: 8px;
+        }
+
+        .update-button {
+            width: 100%;
+            margin-top: 16px;
+            background: var(--blue);
+            color: white;
+        }
+
+        #message {
+            min-height: 1.5em;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        .ok {
+            color: var(--green);
+        }
+
+        .error {
+            color: var(--red);
+        }
+
+        .info {
+            color: var(--blue);
+        }
+
+        #ownerPanel,
+        #personsPanel {
+            display: none;
+        }
+
+        .organization {
+            margin-top: 20px;
+            font-size: 0.78rem;
+            text-align: center;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+<main>
+
+    <header>
+        <h1 id="title">DWD Raumschild</h1>
+        <div id="subtitle">Bluetooth-Verbindung herstellen</div>
+    </header>
+
+
+    <section class="panel">
+
+        <div class="connection-row">
+            <div id="connectionDot" class="dot"></div>
+
+            <button id="connectButton"
+                    class="primary">
+                Raumschild verbinden
+            </button>
+        </div>
+
+        <div id="message"></div>
+
+    </section>
+
+
+    <section id="ownerPanel" class="panel">
+
+        <label for="ownerSelect">
+            Dieses Smartphone wird normalerweise verwendet von:
+        </label>
+
+        <select id="ownerSelect">
+            <option value="">Bitte auswählen …</option>
+        </select>
+
+    </section>
+
+
+    <section id="personsPanel">
+
+        <div id="persons"></div>
+
+        <div class="organization">
+            <div id="organization"></div>
+            <div id="department"></div>
+        </div>
+
+    </section>
+
+</main>
+
+
+<datalist id="statusSuggestions">
+    <option value="Anwesend">
+    <option value="Unterwegs">
+    <option value="Messfeld">
+    <option value="Besprechung">
+    <option value="Homeoffice">
+    <option value="Urlaub">
+    <option value="Dienstreise">
+    <option value="Abwesend">
+</datalist>
+
+
+<script>
+"use strict";
+
+
+// ============================================================
+// Nordic UART Service
+// ============================================================
+
+const NUS_SERVICE =
+    "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+
+const NUS_RX =
+    "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+
+const NUS_TX =
+    "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
+
+// ============================================================
+// BLE
+// ============================================================
+
+let device = null;
+let server = null;
+
+let rxCharacteristic = null;
+let txCharacteristic = null;
+
+
+// ============================================================
+// Raumschild-Daten
+// ============================================================
+
+let roomNumber = "";
+
+const people = new Map();
+
+let organization = "";
+let department = "";
+
+
+// Empfangspuffer für BLE-Notifications
+let notificationBuffer = "";
+
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
+
+
+// ============================================================
+// DOM
+// ============================================================
+
+const connectButton =
+    document.getElementById("connectButton");
+
+const connectionDot =
+    document.getElementById("connectionDot");
+
+const message =
+    document.getElementById("message");
+
+const ownerPanel =
+    document.getElementById("ownerPanel");
+
+const ownerSelect =
+    document.getElementById("ownerSelect");
+
+const personsPanel =
+    document.getElementById("personsPanel");
+
+const personsContainer =
+    document.getElementById("persons");
+
+
+// ============================================================
+// Meldungen
+// ============================================================
+
+function setMessage(text, type = "info")
+{
+    message.textContent = text;
+    message.className = type;
+}
+
+
+// ============================================================
+// Verbindung
+// ============================================================
+
+async function connect()
+{
+    if (!navigator.bluetooth) {
+
+        setMessage(
+            "Web Bluetooth wird von diesem Browser nicht unterstützt.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        setMessage(
+            "Raumschild auswählen …"
+        );
+
+
+        device =
+            await navigator.bluetooth.requestDevice({
+
+                filters: [
+                    {
+                        namePrefix: "RAUMSCHILD-"
+                    }
+                ],
+
+                optionalServices: [
+                    NUS_SERVICE
+                ]
+            });
+
+
+        device.addEventListener(
+            "gattserverdisconnected",
+            handleDisconnected
+        );
+
+
+        setMessage(
+            "Verbinde …"
+        );
+
+
+        server =
+            await device.gatt.connect();
+
+
+        const service =
+            await server.getPrimaryService(
+                NUS_SERVICE
+            );
+
+
+        rxCharacteristic =
+            await service.getCharacteristic(
+                NUS_RX
+            );
+
+
+        txCharacteristic =
+            await service.getCharacteristic(
+                NUS_TX
+            );
+
+
+        // Antworten vom XIAO abonnieren
+
+        await txCharacteristic.startNotifications();
+
+
+        txCharacteristic.addEventListener(
+            "characteristicvaluechanged",
+            handleNotification
+        );
+
+
+        connectionDot.classList.add(
+            "connected"
+        );
+
+
+        connectButton.textContent =
+            "Verbunden";
+
+
+        connectButton.disabled =
+            true;
+
+
+        setMessage(
+            "Verbunden – lese Raumschild …",
+            "ok"
+        );
+
+
+        // Alte Daten entfernen
+
+        people.clear();
+
+        roomNumber = "";
+        organization = "";
+        department = "";
+
+
+        // Konfiguration lesen
+
+        await sendCommand("INFO");
+
+
+        // Kurz warten, dann aktuelle Zustände lesen
+
+        await delay(250);
+
+        await sendCommand("GET");
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        setMessage(
+            "Verbindung fehlgeschlagen: " +
+            error.message,
+            "error"
+        );
+    }
+}
+
+
+// ============================================================
+// Disconnect
+// ============================================================
+
+function handleDisconnected()
+{
+    connectionDot.classList.remove(
+        "connected"
+    );
+
+
+    connectButton.textContent =
+        "Raumschild verbinden";
+
+
+    connectButton.disabled =
+        false;
+
+
+    setMessage(
+        "Bluetooth-Verbindung getrennt.",
+        "error"
+    );
+
+
+    rxCharacteristic = null;
+    txCharacteristic = null;
+    server = null;
+}
+
+
+// ============================================================
+// BLE senden
+// ============================================================
+
+async function sendCommand(command)
+{
+    if (!rxCharacteristic) {
+
+        throw new Error(
+            "Keine Bluetooth-Verbindung"
+        );
+    }
+
+
+    /*
+     * BLE kann bei kleiner MTU nur ungefähr 20 Nutzbytes
+     * pro Paket transportieren.
+     *
+     * Deshalb senden wir längere Befehle stückweise.
+     * Die Firmware sammelt die Pakete wieder zusammen.
+     */
+
+    const data =
+        encoder.encode(command);
+
+
+    const CHUNK_SIZE = 20;
+
+
+    for (
+        let offset = 0;
+        offset < data.length;
+        offset += CHUNK_SIZE
+    ) {
+
+        const chunk =
+            data.slice(
+                offset,
+                offset + CHUNK_SIZE
+            );
+
+
+        if (
+            rxCharacteristic.properties
+                .writeWithoutResponse
+        ) {
+
+            await rxCharacteristic
+                .writeValueWithoutResponse(
+                    chunk
+                );
+
+        } else {
+
+            await rxCharacteristic
+                .writeValueWithResponse(
+                    chunk
+                );
+        }
+
+
+        /*
+         * Kurze Pause:
+         * deutlich unter den 60 ms der Firmware,
+         * aber genug für eine saubere Paketfolge.
+         */
+
+        await delay(10);
+    }
+}
+
+
+// ============================================================
+// BLE Notifications
+// ============================================================
+
+function handleNotification(event)
+{
+    const value =
+        event.target.value;
+
+
+    const bytes =
+        new Uint8Array(
+            value.buffer,
+            value.byteOffset,
+            value.byteLength
+        );
+
+
+    notificationBuffer +=
+        decoder.decode(
+            bytes,
+            { stream: true }
+        );
+
+
+    // BLEUart.println() beendet Zeilen mit \n
+
+    while (
+        notificationBuffer.includes("\n")
+    ) {
+
+        const position =
+            notificationBuffer.indexOf("\n");
+
+
+        let line =
+            notificationBuffer
+                .slice(0, position)
+                .replace(/\r$/, "");
+
+
+        notificationBuffer =
+            notificationBuffer
+                .slice(position + 1);
+
+
+        line = line.trim();
+
+
+        if (line.length > 0) {
+            processLine(line);
+        }
+    }
+}
+
+
+// ============================================================
+// Antwort der Firmware auswerten
+// ============================================================
+
+function processLine(line)
+{
+    console.log(
+        "Raumschild:",
+        line
+    );
+
+
+    const fields =
+        line.split("|");
+
+
+    switch (fields[0]) {
+
+        // ----------------------------------------------------
+        // Raum
+        // ----------------------------------------------------
+
+        case "ROOM":
+
+            roomNumber =
+                fields[1] ?? "";
+
+            document.getElementById(
+                "title"
+            ).textContent =
+                "Raumschild " +
+                roomNumber;
+
+            loadOwnerPreference();
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Organisation
+        // ----------------------------------------------------
+
+        case "ORG":
+
+            organization =
+                fields.slice(1).join("|");
+
+            document.getElementById(
+                "organization"
+            ).textContent =
+                organization;
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Sachgebiet
+        // ----------------------------------------------------
+
+        case "DEPT":
+
+            department =
+                fields.slice(1).join("|");
+
+            document.getElementById(
+                "department"
+            ).textContent =
+                department;
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Person
+        // PERSON|P1|Kathleen Dix
+        // ----------------------------------------------------
+
+        case "PERSON":
+
+            ensurePerson(
+                fields[1],
+                fields.slice(2).join("|")
+            );
+
+            rebuildOwnerSelect();
+            renderPeople();
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Zustand
+        //
+        // STATE|P1|Kathleen Dix|Urlaub|bis 18.11.
+        // ----------------------------------------------------
+
+        case "STATE":
+
+            processState(fields);
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Update angenommen
+        // ----------------------------------------------------
+
+        case "OK":
+
+            setMessage(
+                "Änderung übernommen.",
+                "ok"
+            );
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Display wird aktualisiert
+        // ----------------------------------------------------
+
+        case "REFRESHING":
+
+            setMessage(
+                "E-Paper wird aktualisiert …",
+                "info"
+            );
+
+            setUpdateButtons(false);
+
+            break;
+
+
+        // ----------------------------------------------------
+        // fertig
+        // ----------------------------------------------------
+
+        case "READY":
+
+            setMessage(
+                "Raumschild wurde aktualisiert.",
+                "ok"
+            );
+
+            setUpdateButtons(true);
+
+            break;
+
+
+        // ----------------------------------------------------
+        // Firmwarefehler
+        // ----------------------------------------------------
+
+        case "ERR":
+
+            setMessage(
+                "Raumschild meldet Fehler: " +
+                fields.slice(1).join(" "),
+                "error"
+            );
+
+            setUpdateButtons(true);
+
+            break;
+    }
+}
+
+
+// ============================================================
+// Person erzeugen
+// ============================================================
+
+function ensurePerson(id, name)
+{
+    if (!people.has(id)) {
+
+        people.set(
+            id,
+            {
+                id: id,
+                name: name,
+                status: "",
+                text: ""
+            }
+        );
+
+    } else if (name) {
+
+        people.get(id).name =
+            name;
+    }
+}
+
+
+// ============================================================
+// STATE auswerten
+// ============================================================
+
+function processState(fields)
+{
+    const id =
+        fields[1];
+
+    const name =
+        fields[2] ?? "";
+
+    const status =
+        fields[3] ?? "";
+
+    const text =
+        fields.slice(4).join("|");
+
+
+    ensurePerson(
+        id,
+        name
+    );
+
+
+    const person =
+        people.get(id);
+
+
+    person.status =
+        status;
+
+    person.text =
+        text;
+
+
+    rebuildOwnerSelect();
+    renderPeople();
+
+
+    ownerPanel.style.display =
+        "block";
+
+    personsPanel.style.display =
+        "block";
+
+
+    document.getElementById(
+        "subtitle"
+    ).textContent =
+        organization || "Bluetooth-Raumschild";
+}
+
+
+// ============================================================
+// Dieses Handy gehört zu ...
+// ============================================================
+
+function ownerStorageKey()
+{
+    return (
+        "raumschild-owner-" +
+        (roomNumber || "default")
+    );
+}
+
+
+function getPreferredPerson()
+{
+    return localStorage.getItem(
+        ownerStorageKey()
+    ) || "";
+}
+
+
+function loadOwnerPreference()
+{
+    const saved =
+        getPreferredPerson();
+
+
+    if (saved) {
+        ownerSelect.value =
+            saved;
+    }
+}
+
+
+ownerSelect.addEventListener(
+    "change",
+    () => {
+
+        if (ownerSelect.value) {
+
+            localStorage.setItem(
+                ownerStorageKey(),
+                ownerSelect.value
+            );
+
+        } else {
+
+            localStorage.removeItem(
+                ownerStorageKey()
+            );
+        }
+
+
+        renderPeople();
+    }
+);
+
+
+// ============================================================
+// Owner-Auswahl aufbauen
+// ============================================================
+
+function rebuildOwnerSelect()
+{
+    const selected =
+        getPreferredPerson();
+
+
+    ownerSelect.innerHTML =
+        '<option value="">Bitte auswählen …</option>';
+
+
+    for (
+        const person of people.values()
+    ) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            person.id;
+
+        option.textContent =
+            person.name;
+
+
+        ownerSelect.appendChild(
+            option
+        );
+    }
+
+
+    if (
+        selected &&
+        people.has(selected)
+    ) {
+
+        ownerSelect.value =
+            selected;
+    }
+}
+
+
+// ============================================================
+// Personenkarten zeichnen
+// ============================================================
+
+function renderPeople()
+{
+    personsContainer.innerHTML =
+        "";
+
+
+    const preferred =
+        getPreferredPerson();
+
+
+    let list =
+        Array.from(
+            people.values()
+        );
+
+
+    // Eigene Person zuerst
+
+    if (preferred) {
+
+        list.sort(
+            (a, b) => {
+
+                if (
+                    a.id === preferred
+                ) return -1;
+
+                if (
+                    b.id === preferred
+                ) return 1;
+
+                return 0;
+            }
+        );
+    }
+
+
+    for (
+        const person of list
+    ) {
+
+        const details =
+            document.createElement(
+                "details"
+            );
+
+
+        details.className =
+            "person";
+
+
+        /*
+         * Eigener Eintrag standardmäßig geöffnet.
+         * Andere Person bleibt zu,
+         * kann aber jederzeit geöffnet werden.
+         */
+
+        if (
+            !preferred ||
+            person.id === preferred
+        ) {
+
+            details.open =
+                true;
+        }
+
+
+        const summary =
+            document.createElement(
+                "summary"
+            );
+
+
+        summary.textContent =
+            person.name;
+
+
+        const body =
+            document.createElement(
+                "div"
+            );
+
+
+        body.className =
+            "person-body";
+
+
+        const current =
+            document.createElement(
+                "div"
+            );
+
+
+        current.className =
+            "person-status";
+
+
+        current.textContent =
+            currentStatusText(
+                person
+            );
+
+
+        body.innerHTML += `
+            <label>
+                Status
+            </label>
+
+            <input
+                id="status-${person.id}"
+                list="statusSuggestions"
+                maxlength="24"
+                autocomplete="off"
+            >
+
+            <label>
+                Zusatztext
+            </label>
+
+            <textarea
+                id="text-${person.id}"
+                maxlength="80"
+                placeholder="z. B. Westschenkel oder bis 18.11."
+            ></textarea>
+
+            <button
+                class="update-button"
+                data-person="${person.id}"
+            >
+                ${person.name} aktualisieren
+            </button>
+        `;
+
+
+        details.appendChild(
+            summary
+        );
+
+
+        body.prepend(
+            current
+        );
+
+
+        details.appendChild(
+            body
+        );
+
+
+        personsContainer.appendChild(
+            details
+        );
+
+
+        document.getElementById(
+            "status-" + person.id
+        ).value =
+            person.status;
+
+
+        document.getElementById(
+            "text-" + person.id
+        ).value =
+            person.text;
+    }
+
+
+    document
+        .querySelectorAll(
+            ".update-button"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () =>
+                        updatePerson(
+                            button.dataset.person
+                        )
+                );
+            }
+        );
+}
+
+
+// ============================================================
+// Aktuellen Status als Text
+// ============================================================
+
+function currentStatusText(person)
+{
+    let result =
+        "Aktuell: " +
+        (person.status || "–");
+
+
+    if (person.text) {
+
+        result +=
+            " – " +
+            person.text;
+    }
+
+
+    return result;
+}
+
+
+// ============================================================
+// Eine Person aktualisieren
+// ============================================================
+
+async function updatePerson(id)
+{
+    const person =
+        people.get(id);
+
+
+    if (!person) {
+        return;
+    }
+
+
+    let status =
+        document.getElementById(
+            "status-" + id
+        ).value.trim();
+
+
+    let text =
+        document.getElementById(
+            "text-" + id
+        ).value.trim();
+
+
+    // --------------------------------------------------------
+    // Unser BLE-Protokoll verwendet "|" als Trenner
+    // --------------------------------------------------------
+
+    if (
+        status.includes("|") ||
+        text.includes("|")
+    ) {
+
+        setMessage(
+            'Das Zeichen "|" kann nicht verwendet werden.',
+            "error"
+        );
+
+        return;
+    }
+
+
+    // Zeilenumbrüche entfernen
+
+    status =
+        status.replace(
+            /[\r\n]+/g,
+            " "
+        );
+
+
+    text =
+        text.replace(
+            /[\r\n]+/g,
+            " "
+        );
+
+
+    /*
+     * Die aktuell verwendeten GFX-Fonts sind ASCII-orientiert.
+     * Deutsche Sonderzeichen deshalb zunächst transliterieren.
+     */
+
+    status =
+        normalizeGerman(
+            status
+        );
+
+
+    text =
+        normalizeGerman(
+            text
+        );
+
+
+    const command =
+        `SET|${id}|${status}|${text}`;
+
+
+    try {
+
+        setUpdateButtons(
+            false
+        );
+
+
+        setMessage(
+            "Sende Änderung …",
+            "info"
+        );
+
+
+        await sendCommand(
+            command
+        );
+
+
+        /*
+         * Der endgültige Zustand kommt anschließend
+         * mit OK / REFRESHING / READY von der Firmware.
+         */
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+
+        setMessage(
+            "Senden fehlgeschlagen: " +
+            error.message,
+            "error"
+        );
+
+
+        setUpdateButtons(
+            true
+        );
+    }
+}
+
+
+// ============================================================
+// Deutsche Sonderzeichen
+// ============================================================
+
+function normalizeGerman(text)
+{
+    return text
+        .replaceAll("ä", "ae")
+        .replaceAll("ö", "oe")
+        .replaceAll("ü", "ue")
+        .replaceAll("Ä", "Ae")
+        .replaceAll("Ö", "Oe")
+        .replaceAll("Ü", "Ue")
+        .replaceAll("ß", "ss");
+}
+
+
+// ============================================================
+// Update-Buttons
+// ============================================================
+
+function setUpdateButtons(enabled)
+{
+    document
+        .querySelectorAll(
+            ".update-button"
+        )
+        .forEach(
+            button => {
+                button.disabled =
+                    !enabled;
+            }
+        );
+}
+
+
+// ============================================================
+// kleine Pause
+// ============================================================
+
+function delay(ms)
+{
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
+}
+
+
+// ============================================================
+// Connect Button
+// ============================================================
+
+connectButton.addEventListener(
+    "click",
+    connect
+);
+
+</script>
+
+</body>
+</html>
