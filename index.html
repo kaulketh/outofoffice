@@ -36,10 +36,9 @@
             margin: 0;
             padding: 20px;
 
-            font-family:
-                system-ui,
-                -apple-system,
-                sans-serif;
+            font-family: system-ui,
+            -apple-system,
+            sans-serif;
 
             background: var(--background);
             color: var(--text);
@@ -81,9 +80,7 @@
             padding: 18px;
             margin-bottom: 16px;
 
-            box-shadow:
-                0 2px 8px
-                rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .connection-row {
@@ -158,9 +155,7 @@
         }
 
 
-        /* ====================================================
-           Akku
-           ==================================================== */
+        /* Akku */
 
         #batteryPanel {
             display: none;
@@ -210,9 +205,7 @@
         }
 
 
-        /* ====================================================
-           Nutzer
-           ==================================================== */
+        /* Nutzer */
 
         #ownerSetupPanel,
         #ownerCompactPanel,
@@ -275,18 +268,14 @@
         }
 
 
-        /* ====================================================
-           Personen
-           ==================================================== */
+        /* Personen */
 
         details.person {
             background: var(--panel);
             border-radius: 12px;
             margin-bottom: 14px;
 
-            box-shadow:
-                0 2px 8px
-                rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
             overflow: hidden;
         }
@@ -341,9 +330,7 @@
         }
 
 
-        /* ====================================================
-           PWA
-           ==================================================== */
+        /* PWA */
 
         #installButton {
             display: none;
@@ -352,9 +339,7 @@
         }
 
 
-        /* ====================================================
-           Dark Mode
-           ==================================================== */
+        /* Dark Mode */
 
         @media (prefers-color-scheme: dark) {
             :root {
@@ -377,6 +362,74 @@
                 color: #8ec5ff;
                 border-color: #4778aa;
             }
+        }
+
+        .maker-footer {
+            margin-top: 22px;
+            padding-top: 16px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            gap: 10px;
+
+            opacity: 0.7;
+        }
+
+
+        .maker-logo {
+            width: 36px;
+            height: 36px;
+
+            object-fit: contain;
+        }
+
+
+        .maker-text {
+            text-align: left;
+            line-height: 1.2;
+        }
+
+
+        .maker-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+
+            color: var(--blue);
+        }
+
+
+        .maker-tagline {
+            margin-top: 2px;
+
+            font-size: 0.68rem;
+
+            color: var(--gray);
+        }
+
+        .maker-banner-wrap {
+            margin-top: 24px;
+            padding-top: 16px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+            justify-content: center;
+        }
+
+
+        .maker-banner {
+            display: block;
+
+            width: min(100%, 520px);
+            height: auto;
+
+            opacity: 0.78;
+
+            border-radius: 8px;
         }
 
     </style>
@@ -406,22 +459,20 @@
     </header>
 
 
-    <!-- ======================================================
-         Verbindung + Akku
-         ====================================================== -->
+    <!-- Verbindung + Akku -->
 
     <section class="panel">
 
         <div class="connection-row">
 
             <div
-                id="connectionDot"
-                class="dot">
+                    id="connectionDot"
+                    class="dot">
             </div>
 
             <button
-                id="connectButton"
-                class="primary">
+                    id="connectButton"
+                    class="primary">
 
                 Raumschild verbinden
 
@@ -430,7 +481,9 @@
         </div>
 
 
-        <div id="message"></div>
+        <div id="message">
+            Bereit zum Verbinden.
+        </div>
 
 
         <div id="batteryPanel">
@@ -455,8 +508,8 @@
 
 
         <button
-            id="installButton"
-            class="secondary">
+                id="installButton"
+                class="secondary">
 
             Als App installieren
 
@@ -465,13 +518,11 @@
     </section>
 
 
-    <!-- ======================================================
-         Kompakte Nutzeranzeige
-         ====================================================== -->
+    <!-- Kompakte Nutzeranzeige -->
 
     <section
-        id="ownerCompactPanel"
-        class="panel">
+            id="ownerCompactPanel"
+            class="panel">
 
         <div class="owner-compact">
 
@@ -488,8 +539,8 @@
             </div>
 
             <button
-                id="changeOwnerButton"
-                class="secondary small-button">
+                    id="changeOwnerButton"
+                    class="secondary small-button">
 
                 Ändern
 
@@ -500,13 +551,11 @@
     </section>
 
 
-    <!-- ======================================================
-         Nutzereinrichtung
-         ====================================================== -->
+    <!-- Nutzereinrichtung -->
 
     <section
-        id="ownerSetupPanel"
-        class="panel">
+            id="ownerSetupPanel"
+            class="panel">
 
         <label for="ownerSelect">
 
@@ -526,16 +575,16 @@
         <div class="owner-setup-buttons">
 
             <button
-                id="ownerDoneButton"
-                class="primary">
+                    id="ownerDoneButton"
+                    class="primary">
 
                 Übernehmen
 
             </button>
 
             <button
-                id="ownerCancelButton"
-                class="secondary">
+                    id="ownerCancelButton"
+                    class="secondary">
 
                 Abbrechen
 
@@ -546,19 +595,20 @@
     </section>
 
 
-    <!-- ======================================================
-         Personen
-         ====================================================== -->
+    <!-- Personen -->
 
     <section id="personsPanel">
 
         <div id="persons"></div>
 
-        <div class="organization">
 
-            <div id="organization"></div>
-
-            <div id="department"></div>
+        <div class="maker-banner-wrap">
+            <img
+                    src="./assets/Kaulketh%20Maker%20Projects%20Branding%20banner.png"
+                    alt="Kaulketh Maker Projects"
+                    class="maker-banner"
+            >
+        </div>
 
         </div>
 
@@ -569,1244 +619,1121 @@
 
 <script>
 
-"use strict";
+    "use strict";
 
 
-// ============================================================
-// Nordic UART Service
-// ============================================================
+    // ============================================================
+    // Nordic UART Service
+    // ============================================================
 
-const NUS_SERVICE =
-    "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const NUS_SERVICE =
+        "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 
-const NUS_RX =
-    "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    const NUS_RX =
+        "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 
-const NUS_TX =
-    "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-
-
-// ============================================================
-// BLE
-// ============================================================
-
-let device = null;
-let server = null;
-
-let rxCharacteristic = null;
-let txCharacteristic = null;
+    const NUS_TX =
+        "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 
-// ============================================================
-// Daten
-// ============================================================
+    // ============================================================
+    // BLE
+    // ============================================================
 
-let roomNumber = "";
+    let device = null;
+    let server = null;
 
-let organization = "";
-let department = "";
-
-let batteryVoltage = null;
-let batteryPercent = null;
-
-let notificationBuffer = "";
-
-let refreshAfterUpdate = false;
-
-const people = new Map();
-
-const decoder = new TextDecoder();
-const encoder = new TextEncoder();
+    let rxCharacteristic = null;
+    let txCharacteristic = null;
 
 
-// ============================================================
-// DOM
-// ============================================================
+    // ============================================================
+    // Daten
+    // ============================================================
 
-const connectButton =
-    document.getElementById("connectButton");
+    let roomNumber = "";
 
-const connectionDot =
-    document.getElementById("connectionDot");
+    let organization = "";
+    let department = "";
 
-const message =
-    document.getElementById("message");
+    let batteryVoltage = null;
+    let batteryPercent = null;
 
-const batteryPanel =
-    document.getElementById("batteryPanel");
+    let notificationBuffer = "";
 
-const batteryValue =
-    document.getElementById("batteryValue");
+    let refreshAfterUpdate = false;
 
-const batteryBar =
-    document.getElementById("batteryBar");
+    const people = new Map();
 
-
-const ownerCompactPanel =
-    document.getElementById("ownerCompactPanel");
-
-const ownerCompactName =
-    document.getElementById("ownerCompactName");
-
-const changeOwnerButton =
-    document.getElementById("changeOwnerButton");
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
 
 
-const ownerSetupPanel =
-    document.getElementById("ownerSetupPanel");
+    // ============================================================
+    // DOM
+    // ============================================================
 
-const ownerSelect =
-    document.getElementById("ownerSelect");
+    const connectButton =
+        document.getElementById("connectButton");
 
-const ownerDoneButton =
-    document.getElementById("ownerDoneButton");
+    const connectionDot =
+        document.getElementById("connectionDot");
 
-const ownerCancelButton =
-    document.getElementById("ownerCancelButton");
+    const message =
+        document.getElementById("message");
 
+    const batteryPanel =
+        document.getElementById("batteryPanel");
 
-const personsPanel =
-    document.getElementById("personsPanel");
+    const batteryValue =
+        document.getElementById("batteryValue");
 
-const personsContainer =
-    document.getElementById("persons");
-
-
-const installButton =
-    document.getElementById("installButton");
-
-
-// ============================================================
-// Meldung
-// ============================================================
-
-function setMessage(
-    text,
-    type = "info")
-{
-    message.textContent = text;
-    message.className = type;
-}
+    const batteryBar =
+        document.getElementById("batteryBar");
 
 
-// ============================================================
-// Akku
-// ============================================================
+    const ownerCompactPanel =
+        document.getElementById("ownerCompactPanel");
 
-function renderBattery()
-{
-    if (
-        batteryVoltage === null ||
-        batteryPercent === null
-    ) {
-        batteryPanel.style.display =
-            "none";
+    const ownerCompactName =
+        document.getElementById("ownerCompactName");
 
-        return;
+    const changeOwnerButton =
+        document.getElementById("changeOwnerButton");
+
+
+    const ownerSetupPanel =
+        document.getElementById("ownerSetupPanel");
+
+    const ownerSelect =
+        document.getElementById("ownerSelect");
+
+    const ownerDoneButton =
+        document.getElementById("ownerDoneButton");
+
+    const ownerCancelButton =
+        document.getElementById("ownerCancelButton");
+
+
+    const personsPanel =
+        document.getElementById("personsPanel");
+
+    const personsContainer =
+        document.getElementById("persons");
+
+
+    const installButton =
+        document.getElementById("installButton");
+
+
+    // ============================================================
+    // Meldung
+    // ============================================================
+
+    function setMessage(
+        text,
+        type = "info") {
+        message.textContent = text;
+        message.className = type;
     }
 
 
-    batteryPanel.style.display =
-        "block";
-
-
-    batteryValue.textContent =
-        batteryVoltage.toFixed(2) +
-        " V · ca. " +
-        batteryPercent +
-        " %";
-
-
-    const percent =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                batteryPercent
-            )
-        );
-
-
-    batteryBar.style.width =
-        percent + "%";
-
-
-    batteryBar.classList.remove(
-        "warning",
-        "low"
-    );
-
-
-    if (batteryVoltage < 3.60) {
-
-        batteryBar.classList.add(
-            "low"
-        );
-
-    } else if (batteryVoltage < 3.80) {
-
-        batteryBar.classList.add(
-            "warning"
-        );
-    }
-}
-
-
-function processBattery(fields)
-{
-    if (
-        fields.length < 2 ||
-        fields[1] === "NA"
-    ) {
-        batteryVoltage = null;
-        batteryPercent = null;
-
-        batteryPanel.style.display =
-            "none";
-
-        return;
-    }
-
-
-    const voltage =
-        Number(fields[1]);
-
-    const percent =
-        Number(fields[2]);
-
-
-    if (
-        !Number.isFinite(voltage) ||
-        !Number.isFinite(percent)
-    ) {
-        return;
-    }
-
-
-    batteryVoltage = voltage;
-    batteryPercent = percent;
-
-    renderBattery();
-}
-
-
-// ============================================================
-// Manuelle BLE-Verbindung
-// ============================================================
-
-async function connect()
-{
-    if (!navigator.bluetooth) {
-
-        setMessage(
-            "Web Bluetooth wird von diesem Browser nicht unterstützt.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        setMessage(
-            "Raumschild auswählen …",
-            "info"
-        );
-
-
-        const selectedDevice =
-            await navigator.bluetooth.requestDevice({
-
-                filters: [
-                    {
-                        namePrefix:
-                            "RAUMSCHILD-"
-                    }
-                ],
-
-                optionalServices: [
-                    NUS_SERVICE
-                ]
-            });
-
-
-        localStorage.setItem(
-            "raumschild-last-device",
-            selectedDevice.id
-        );
-
-
-        await connectToDevice(
-            selectedDevice
-        );
-
-    }
-    catch (error) {
-
-        if (error.name === "NotFoundError") {
-
-            setMessage(
-                "Keine Verbindung hergestellt.",
-                "info"
-            );
-
-            return;
-        }
-
-
-        console.error(error);
-
-
-        setMessage(
-            "Verbindung fehlgeschlagen: " +
-            error.message,
-            "error"
-        );
-    }
-}
-
-
-// ============================================================
-// Gerät verbinden
-// ============================================================
-
-async function connectToDevice(
-    bluetoothDevice,
-    automatic = false)
-{
-    device =
-        bluetoothDevice;
-
-
-    device.addEventListener(
-        "gattserverdisconnected",
-        handleDisconnected
-    );
-
-
-    setMessage(
-        automatic
-            ? "Verbinde automatisch …"
-            : "Verbinde …",
-        "info"
-    );
-
-
-    server =
-        device.gatt.connected
-            ? device.gatt
-            : await device.gatt.connect();
-
-
-    const service =
-        await server.getPrimaryService(
-            NUS_SERVICE
-        );
-
-
-    rxCharacteristic =
-        await service.getCharacteristic(
-            NUS_RX
-        );
-
-
-    txCharacteristic =
-        await service.getCharacteristic(
-            NUS_TX
-        );
-
-
-    await txCharacteristic
-        .startNotifications();
-
-
-    txCharacteristic.addEventListener(
-        "characteristicvaluechanged",
-        handleNotification
-    );
-
-
-    connectionDot.classList.add(
-        "connected"
-    );
-
-
-    connectButton.textContent =
-        "Verbunden";
-
-
-    connectButton.disabled =
-        true;
-
-
-    resetRemoteData();
-
-
-    setMessage(
-        "Verbunden – lese Konfiguration …",
-        "info"
-    );
-
-
-    await sendCommand(
-        "INFO"
-    );
-}
-
-
-// ============================================================
-// Automatisch wiederverbinden
-// ============================================================
-
-async function tryAutoReconnect()
-{
-    if (
-        !navigator.bluetooth ||
-        !navigator.bluetooth.getDevices
-    ) {
-        return;
-    }
-
-
-    try {
-
-        const devices =
-            await navigator.bluetooth.getDevices();
-
-
-        if (!devices.length) {
-            return;
-        }
-
-
-        const knownRoomSigns =
-            devices.filter(
-                item =>
-                    item.name &&
-                    item.name.startsWith(
-                        "RAUMSCHILD-"
-                    )
-            );
-
-
-        if (!knownRoomSigns.length) {
-            return;
-        }
-
-
-        const lastId =
-            localStorage.getItem(
-                "raumschild-last-device"
-            );
-
-
-        let candidate =
-            knownRoomSigns.find(
-                item =>
-                    item.id === lastId
-            );
-
-
-        if (!candidate) {
-            candidate =
-                knownRoomSigns[0];
-        }
-
-
-        await connectToDevice(
-            candidate,
-            true
-        );
-
-    }
-    catch (error) {
-
-        console.log(
-            "Automatische BLE-Verbindung nicht möglich:",
-            error
-        );
-
-
-        setMessage(
-            "Bereit zum Verbinden.",
-            "info"
-        );
-    }
-}
-
-
-// ============================================================
-// Remote-Daten zurücksetzen
-// ============================================================
-
-function resetRemoteData()
-{
-    people.clear();
-
-    roomNumber = "";
-    organization = "";
-    department = "";
-
-    batteryVoltage = null;
-    batteryPercent = null;
-
-    notificationBuffer = "";
-
-    batteryPanel.style.display =
-        "none";
-
-    ownerCompactPanel.style.display =
-        "none";
-
-    ownerSetupPanel.style.display =
-        "none";
-
-    personsPanel.style.display =
-        "none";
-}
-
-
-// ============================================================
-// Disconnect
-// ============================================================
-
-function handleDisconnected()
-{
-    connectionDot.classList.remove(
-        "connected"
-    );
-
-
-    connectButton.textContent =
-        "Raumschild verbinden";
-
-
-    connectButton.disabled =
-        false;
-
-
-    setMessage(
-        "Bluetooth-Verbindung getrennt.",
-        "error"
-    );
-
-
-    rxCharacteristic = null;
-    txCharacteristic = null;
-    server = null;
-}
-
-
-// ============================================================
-// BLE senden
-// ============================================================
-
-async function sendCommand(command)
-{
-    if (!rxCharacteristic) {
-
-        throw new Error(
-            "Keine Bluetooth-Verbindung"
-        );
-    }
-
-
-    const data =
-        encoder.encode(command);
-
-
-    const CHUNK_SIZE = 18;
-
-
-    for (
-        let offset = 0;
-        offset < data.length;
-        offset += CHUNK_SIZE
-    ) {
-
-        const chunk =
-            data.slice(
-                offset,
-                offset + CHUNK_SIZE
-            );
-
-
+    // ============================================================
+    // Akku
+    // ============================================================
+
+    function renderBattery() {
         if (
-            rxCharacteristic
-                .properties
-                .writeWithoutResponse
+            batteryVoltage === null ||
+            batteryPercent === null
         ) {
+            batteryPanel.style.display =
+                "none";
 
-            await rxCharacteristic
-                .writeValueWithoutResponse(
-                    chunk
-                );
-
-        } else {
-
-            await rxCharacteristic
-                .writeValueWithResponse(
-                    chunk
-                );
+            return;
         }
 
 
-        await delay(12);
-    }
-}
-
-
-// ============================================================
-// Notifications
-// ============================================================
-
-function handleNotification(event)
-{
-    const value =
-        event.target.value;
-
-
-    const bytes =
-        new Uint8Array(
-            value.buffer,
-            value.byteOffset,
-            value.byteLength
-        );
-
-
-    notificationBuffer +=
-        decoder.decode(
-            bytes,
-            {
-                stream: true
-            }
-        );
-
-
-    while (
-        notificationBuffer.includes("\n")
-    ) {
-
-        const position =
-            notificationBuffer.indexOf(
-                "\n"
-            );
-
-
-        let line =
-            notificationBuffer.slice(
-                0,
-                position
-            );
-
-
-        notificationBuffer =
-            notificationBuffer.slice(
-                position + 1
-            );
-
-
-        line =
-            line
-                .replace(/\r$/, "")
-                .trim();
-
-
-        if (line.length > 0) {
-            processLine(line);
-        }
-    }
-}
-
-
-// ============================================================
-// Protokoll
-// ============================================================
-
-function processLine(line)
-{
-    console.log(
-        "Raumschild:",
-        line
-    );
-
-
-    if (line === "INFO_BEGIN") {
-
-        setMessage(
-            "Lese Raumschild-Konfiguration …",
-            "info"
-        );
-
-        return;
-    }
-
-
-    if (line === "INFO_END") {
-
-        setMessage(
-            "Konfiguration gelesen – lese Status …",
-            "info"
-        );
-
-
-        sendCommand("GET")
-            .catch(handleCommandError);
-
-        return;
-    }
-
-
-    if (line === "STATE_BEGIN") {
-        return;
-    }
-
-
-    if (line === "STATE_END") {
-
-        rebuildOwnerSelect();
-        updateOwnerDisplay();
-        renderPeople();
-
-
-        personsPanel.style.display =
+        batteryPanel.style.display =
             "block";
 
 
-        if (refreshAfterUpdate) {
+        batteryValue.textContent =
+            batteryVoltage.toFixed(2) +
+            " V · ca. " +
+            batteryPercent +
+            " %";
 
-            setMessage(
-                "Raumschild wurde aktualisiert.",
-                "ok"
+
+        const percent =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    batteryPercent
+                )
             );
 
-            refreshAfterUpdate =
-                false;
 
-        } else {
+        batteryBar.style.width =
+            percent + "%";
+
+
+        batteryBar.classList.remove(
+            "warning",
+            "low"
+        );
+
+
+        if (batteryVoltage < 3.60) {
+
+            batteryBar.classList.add(
+                "low"
+            );
+
+        } else if (batteryVoltage < 3.80) {
+
+            batteryBar.classList.add(
+                "warning"
+            );
+        }
+    }
+
+
+    function processBattery(fields) {
+        if (
+            fields.length < 2 ||
+            fields[1] === "NA"
+        ) {
+            batteryVoltage = null;
+            batteryPercent = null;
+
+            batteryPanel.style.display =
+                "none";
+
+            return;
+        }
+
+
+        const voltage =
+            Number(fields[1]);
+
+        const percent =
+            Number(fields[2]);
+
+
+        if (
+            !Number.isFinite(voltage) ||
+            !Number.isFinite(percent)
+        ) {
+            return;
+        }
+
+
+        batteryVoltage = voltage;
+        batteryPercent = percent;
+
+        renderBattery();
+    }
+
+
+    // ============================================================
+    // BLE verbinden
+    // ============================================================
+
+    async function connect() {
+        if (!navigator.bluetooth) {
 
             setMessage(
-                "Raumschild vollständig geladen.",
-                "ok"
+                "Web Bluetooth wird von diesem Browser nicht unterstützt.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            setMessage(
+                "Raumschild auswählen …",
+                "info"
+            );
+
+
+            device =
+                await navigator.bluetooth.requestDevice({
+
+                    filters: [
+                        {
+                            namePrefix:
+                                "RAUMSCHILD-"
+                        }
+                    ],
+
+                    optionalServices: [
+                        NUS_SERVICE
+                    ]
+                });
+
+
+            device.addEventListener(
+                "gattserverdisconnected",
+                handleDisconnected
+            );
+
+
+            setMessage(
+                "Verbinde …",
+                "info"
+            );
+
+
+            server =
+                await device.gatt.connect();
+
+
+            const service =
+                await server.getPrimaryService(
+                    NUS_SERVICE
+                );
+
+
+            rxCharacteristic =
+                await service.getCharacteristic(
+                    NUS_RX
+                );
+
+
+            txCharacteristic =
+                await service.getCharacteristic(
+                    NUS_TX
+                );
+
+
+            await txCharacteristic
+                .startNotifications();
+
+
+            txCharacteristic.addEventListener(
+                "characteristicvaluechanged",
+                handleNotification
+            );
+
+
+            connectionDot.classList.add(
+                "connected"
+            );
+
+
+            connectButton.textContent =
+                "Verbunden";
+
+
+            connectButton.disabled =
+                true;
+
+
+            resetRemoteData();
+
+
+            setMessage(
+                "Verbunden – lese Konfiguration …",
+                "info"
+            );
+
+
+            await sendCommand(
+                "INFO"
+            );
+
+        } catch (error) {
+
+            if (error.name === "NotFoundError") {
+
+                setMessage(
+                    "Keine Verbindung hergestellt.",
+                    "info"
+                );
+
+                return;
+            }
+
+
+            console.error(error);
+
+
+            setMessage(
+                "Verbindung fehlgeschlagen: " +
+                error.message,
+                "error"
+            );
+        }
+    }
+
+
+    // ============================================================
+    // Daten zurücksetzen
+    // ============================================================
+
+    function resetRemoteData() {
+        people.clear();
+
+        roomNumber = "";
+        organization = "";
+        department = "";
+
+        batteryVoltage = null;
+        batteryPercent = null;
+
+        notificationBuffer = "";
+
+
+        batteryPanel.style.display =
+            "none";
+
+
+        ownerCompactPanel.style.display =
+            "none";
+
+
+        ownerSetupPanel.style.display =
+            "none";
+
+
+        personsPanel.style.display =
+            "none";
+    }
+
+
+    // ============================================================
+    // Disconnect
+    // ============================================================
+
+    function handleDisconnected() {
+        connectionDot.classList.remove(
+            "connected"
+        );
+
+
+        connectButton.textContent =
+            "Raumschild verbinden";
+
+
+        connectButton.disabled =
+            false;
+
+
+        setMessage(
+            "Bluetooth-Verbindung getrennt.",
+            "error"
+        );
+
+
+        rxCharacteristic = null;
+        txCharacteristic = null;
+        server = null;
+    }
+
+
+    // ============================================================
+    // BLE senden
+    // ============================================================
+
+    async function sendCommand(command) {
+        if (!rxCharacteristic) {
+
+            throw new Error(
+                "Keine Bluetooth-Verbindung"
             );
         }
 
 
-        setUpdateButtons(true);
+        const data =
+            encoder.encode(command);
 
-        return;
+
+        const CHUNK_SIZE = 18;
+
+
+        for (
+            let offset = 0;
+            offset < data.length;
+            offset += CHUNK_SIZE
+        ) {
+
+            const chunk =
+                data.slice(
+                    offset,
+                    offset + CHUNK_SIZE
+                );
+
+
+            if (
+                rxCharacteristic
+                    .properties
+                    .writeWithoutResponse
+            ) {
+
+                await rxCharacteristic
+                    .writeValueWithoutResponse(
+                        chunk
+                    );
+
+            } else {
+
+                await rxCharacteristic
+                    .writeValueWithResponse(
+                        chunk
+                    );
+            }
+
+
+            await delay(12);
+        }
     }
 
 
-    const fields =
-        line.split("|");
+    // ============================================================
+    // BLE Notifications
+    // ============================================================
+
+    function handleNotification(event) {
+        const value =
+            event.target.value;
 
 
-    switch (fields[0]) {
-
-        case "ROOM":
-
-            roomNumber =
-                fields
-                    .slice(1)
-                    .join("|");
-
-
-            document
-                .getElementById("title")
-                .textContent =
-                    "Raum " +
-                    roomNumber;
-
-            break;
-
-
-        case "ORG":
-
-            organization =
-                fields
-                    .slice(1)
-                    .join("|");
-
-
-            document
-                .getElementById("organization")
-                .textContent =
-                    organization;
-
-
-            document
-                .getElementById("organizationTop")
-                .textContent =
-                    organization;
-
-            break;
-
-
-        case "DEPT":
-
-            department =
-                fields
-                    .slice(1)
-                    .join("|");
-
-
-            document
-                .getElementById("department")
-                .textContent =
-                    department;
-
-
-            document
-                .getElementById("departmentTop")
-                .textContent =
-                    department;
-
-            break;
-
-
-        case "PERSON":
-
-            ensurePerson(
-                fields[1],
-                fields
-                    .slice(2)
-                    .join("|")
+        const bytes =
+            new Uint8Array(
+                value.buffer,
+                value.byteOffset,
+                value.byteLength
             );
 
-            break;
 
-
-        case "BAT":
-
-            processBattery(fields);
-            break;
-
-
-        case "STATE":
-
-            processState(fields);
-            break;
-
-
-        case "OK":
-
-            setMessage(
-                "Änderung übernommen.",
-                "ok"
+        notificationBuffer +=
+            decoder.decode(
+                bytes,
+                {
+                    stream: true
+                }
             );
 
-            break;
+
+        while (
+            notificationBuffer.includes("\n")
+            ) {
+
+            const position =
+                notificationBuffer.indexOf(
+                    "\n"
+                );
 
 
-        case "REFRESHING":
+            let line =
+                notificationBuffer.slice(
+                    0,
+                    position
+                );
+
+
+            notificationBuffer =
+                notificationBuffer.slice(
+                    position + 1
+                );
+
+
+            line =
+                line
+                    .replace(/\r$/, "")
+                    .trim();
+
+
+            if (line.length > 0) {
+                processLine(line);
+            }
+        }
+    }
+
+
+    // ============================================================
+    // Protokoll
+    // ============================================================
+
+    function processLine(line) {
+        console.log(
+            "Raumschild:",
+            line
+        );
+
+
+        if (line === "INFO_BEGIN") {
 
             setMessage(
-                "E-Paper wird aktualisiert …",
+                "Lese Raumschild-Konfiguration …",
                 "info"
             );
 
-            setUpdateButtons(false);
+            return;
+        }
 
-            break;
 
+        if (line === "INFO_END") {
 
-        case "READY":
-
-            refreshAfterUpdate =
-                true;
+            setMessage(
+                "Konfiguration gelesen – lese Status …",
+                "info"
+            );
 
 
             sendCommand("GET")
                 .catch(handleCommandError);
 
-            break;
+            return;
+        }
 
 
-        case "ERR":
+        if (line === "STATE_BEGIN") {
+            return;
+        }
 
-            setMessage(
-                "Raumschild meldet Fehler: " +
-                fields
-                    .slice(1)
-                    .join(" "),
-                "error"
-            );
+
+        if (line === "STATE_END") {
+
+            rebuildOwnerSelect();
+            updateOwnerDisplay();
+            renderPeople();
+
+
+            personsPanel.style.display =
+                "block";
+
+
+            if (refreshAfterUpdate) {
+
+                setMessage(
+                    "Raumschild wurde aktualisiert.",
+                    "ok"
+                );
+
+                refreshAfterUpdate =
+                    false;
+
+            } else {
+
+                setMessage(
+                    "Raumschild vollständig geladen.",
+                    "ok"
+                );
+            }
 
 
             setUpdateButtons(true);
-
-            break;
-    }
-}
-
-
-// ============================================================
-// Person
-// ============================================================
-
-function ensurePerson(
-    id,
-    name)
-{
-    if (!people.has(id)) {
-
-        people.set(
-            id,
-            {
-                id: id,
-                name: name,
-                status: "",
-                text: ""
-            }
-        );
-
-    } else if (name) {
-
-        people.get(id).name =
-            name;
-    }
-}
-
-
-function processState(fields)
-{
-    const id =
-        fields[1];
-
-    const name =
-        fields[2] ?? "";
-
-    const status =
-        fields[3] ?? "";
-
-    const text =
-        fields
-            .slice(4)
-            .join("|");
-
-
-    ensurePerson(
-        id,
-        name
-    );
-
-
-    const person =
-        people.get(id);
-
-
-    person.status =
-        status;
-
-    person.text =
-        text;
-}
-
-
-// ============================================================
-// Nutzer-Einstellung
-// ============================================================
-
-function ownerStorageKey()
-{
-    return (
-        "raumschild-owner-" +
-        (
-            roomNumber ||
-            "default"
-        )
-    );
-}
-
-
-function getPreferredPerson()
-{
-    return (
-        localStorage.getItem(
-            ownerStorageKey()
-        ) || ""
-    );
-}
-
-
-function setPreferredPerson(id)
-{
-    if (id) {
-
-        localStorage.setItem(
-            ownerStorageKey(),
-            id
-        );
-
-    } else {
-
-        localStorage.removeItem(
-            ownerStorageKey()
-        );
-    }
-}
-
-
-function rebuildOwnerSelect()
-{
-    const selected =
-        getPreferredPerson();
-
-
-    ownerSelect.innerHTML =
-        '<option value="">Bitte auswählen …</option>';
-
-
-    for (
-        const person
-        of people.values()
-    ) {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-
-        option.value =
-            person.id;
-
-        option.textContent =
-            person.name;
-
-
-        ownerSelect.appendChild(
-            option
-        );
-    }
-
-
-    if (
-        selected &&
-        people.has(selected)
-    ) {
-
-        ownerSelect.value =
-            selected;
-    }
-}
-
-
-function updateOwnerDisplay()
-{
-    const preferred =
-        getPreferredPerson();
-
-
-    if (
-        preferred &&
-        people.has(preferred)
-    ) {
-
-        ownerCompactName.textContent =
-            people.get(preferred).name;
-
-
-        ownerCompactPanel.style.display =
-            "block";
-
-
-        ownerSetupPanel.style.display =
-            "none";
-
-    } else {
-
-        ownerCompactPanel.style.display =
-            "none";
-
-
-        ownerSetupPanel.style.display =
-            "block";
-
-
-        ownerCancelButton.style.display =
-            "none";
-    }
-}
-
-
-changeOwnerButton.addEventListener(
-    "click",
-    () => {
-
-        const preferred =
-            getPreferredPerson();
-
-
-        ownerSelect.value =
-            preferred;
-
-
-        ownerCompactPanel.style.display =
-            "none";
-
-
-        ownerSetupPanel.style.display =
-            "block";
-
-
-        ownerCancelButton.style.display =
-            preferred
-                ? "inline-block"
-                : "none";
-    }
-);
-
-
-ownerDoneButton.addEventListener(
-    "click",
-    () => {
-
-        const selected =
-            ownerSelect.value;
-
-
-        if (!selected) {
-
-            setMessage(
-                "Bitte zuerst einen Nutzer auswählen.",
-                "error"
-            );
 
             return;
         }
 
 
-        setPreferredPerson(
-            selected
-        );
+        const fields =
+            line.split("|");
 
 
-        updateOwnerDisplay();
-        renderPeople();
+        switch (fields[0]) {
+
+            case "ROOM":
+
+                roomNumber =
+                    fields
+                        .slice(1)
+                        .join("|");
+
+
+                document
+                    .getElementById("title")
+                    .textContent =
+                    "Raum " +
+                    roomNumber;
+
+                break;
+
+
+            case "ORG":
+
+                organization =
+                    fields
+                        .slice(1)
+                        .join("|");
+
+
+                document
+                    .getElementById("organization")
+                    .textContent =
+                    organization;
+
+
+                document
+                    .getElementById("organizationTop")
+                    .textContent =
+                    organization;
+
+                break;
+
+
+            case "DEPT":
+
+                department =
+                    fields
+                        .slice(1)
+                        .join("|");
+
+
+                document
+                    .getElementById("department")
+                    .textContent =
+                    department;
+
+
+                document
+                    .getElementById("departmentTop")
+                    .textContent =
+                    department;
+
+                break;
+
+
+            case "PERSON":
+
+                ensurePerson(
+                    fields[1],
+                    fields
+                        .slice(2)
+                        .join("|")
+                );
+
+                break;
+
+
+            case "BAT":
+
+                processBattery(fields);
+                break;
+
+
+            case "STATE":
+
+                processState(fields);
+                break;
+
+
+            case "OK":
+
+                setMessage(
+                    "Änderung übernommen.",
+                    "ok"
+                );
+
+                break;
+
+
+            case "REFRESHING":
+
+                setMessage(
+                    "E-Paper wird aktualisiert …",
+                    "info"
+                );
+
+                setUpdateButtons(false);
+
+                break;
+
+
+            case "READY":
+
+                refreshAfterUpdate =
+                    true;
+
+
+                sendCommand("GET")
+                    .catch(handleCommandError);
+
+                break;
+
+
+            case "ERR":
+
+                setMessage(
+                    "Raumschild meldet Fehler: " +
+                    fields
+                        .slice(1)
+                        .join(" "),
+                    "error"
+                );
+
+
+                setUpdateButtons(true);
+
+                break;
+        }
     }
-);
 
 
-ownerCancelButton.addEventListener(
-    "click",
-    () => {
+    // ============================================================
+    // Person
+    // ============================================================
 
-        rebuildOwnerSelect();
-        updateOwnerDisplay();
-    }
-);
+    function ensurePerson(
+        id,
+        name) {
+        if (!people.has(id)) {
 
-
-// ============================================================
-// Personen darstellen
-// ============================================================
-
-function renderPeople()
-{
-    personsContainer.innerHTML =
-        "";
-
-
-    const preferred =
-        getPreferredPerson();
-
-
-    let list =
-        Array.from(
-            people.values()
-        );
-
-
-    if (preferred) {
-
-        list.sort(
-            (a, b) => {
-
-                if (
-                    a.id === preferred
-                ) {
-                    return -1;
+            people.set(
+                id,
+                {
+                    id: id,
+                    name: name,
+                    status: "",
+                    text: ""
                 }
-
-
-                if (
-                    b.id === preferred
-                ) {
-                    return 1;
-                }
-
-
-                return 0;
-            }
-        );
-    }
-
-
-    for (
-        const person
-        of list
-    ) {
-
-        const details =
-            document.createElement(
-                "details"
             );
 
+        } else if (name) {
 
-        details.className =
-            "person";
+            people.get(id).name =
+                name;
+        }
+    }
 
 
-        if (
-            !preferred ||
-            person.id === preferred
-        ) {
+    function processState(fields) {
+        const id =
+            fields[1];
 
-            details.open =
-                true;
+        const name =
+            fields[2] ?? "";
+
+        const status =
+            fields[3] ?? "";
+
+        const text =
+            fields
+                .slice(4)
+                .join("|");
+
+
+        ensurePerson(
+            id,
+            name
+        );
+
+
+        const person =
+            people.get(id);
+
+
+        person.status =
+            status;
+
+        person.text =
+            text;
+    }
+
+
+    // ============================================================
+    // Nutzer
+    // ============================================================
+
+    function ownerStorageKey() {
+        return (
+            "raumschild-owner-" +
+            (
+                roomNumber ||
+                "default"
+            )
+        );
+    }
+
+
+    function getPreferredPerson() {
+        return (
+            localStorage.getItem(
+                ownerStorageKey()
+            ) || ""
+        );
+    }
+
+
+    function setPreferredPerson(id) {
+        if (id) {
+
+            localStorage.setItem(
+                ownerStorageKey(),
+                id
+            );
+
+        } else {
+
+            localStorage.removeItem(
+                ownerStorageKey()
+            );
+        }
+    }
+
+
+    function rebuildOwnerSelect() {
+        const selected =
+            getPreferredPerson();
+
+
+        ownerSelect.innerHTML =
+            '<option value="">Bitte auswählen …</option>';
+
+
+        for (
+            const person
+            of people.values()
+            ) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                person.id;
+
+            option.textContent =
+                person.name;
+
+
+            ownerSelect.appendChild(
+                option
+            );
         }
 
 
-        const summary =
-            document.createElement(
-                "summary"
+        if (
+            selected &&
+            people.has(selected)
+        ) {
+
+            ownerSelect.value =
+                selected;
+        }
+    }
+
+
+    function updateOwnerDisplay() {
+        const preferred =
+            getPreferredPerson();
+
+
+        if (
+            preferred &&
+            people.has(preferred)
+        ) {
+
+            ownerCompactName.textContent =
+                people.get(preferred).name;
+
+
+            ownerCompactPanel.style.display =
+                "block";
+
+
+            ownerSetupPanel.style.display =
+                "none";
+
+        } else {
+
+            ownerCompactPanel.style.display =
+                "none";
+
+
+            ownerSetupPanel.style.display =
+                "block";
+
+
+            ownerCancelButton.style.display =
+                "none";
+        }
+    }
+
+
+    changeOwnerButton.addEventListener(
+        "click",
+        () => {
+
+            const preferred =
+                getPreferredPerson();
+
+
+            ownerSelect.value =
+                preferred;
+
+
+            ownerCompactPanel.style.display =
+                "none";
+
+
+            ownerSetupPanel.style.display =
+                "block";
+
+
+            ownerCancelButton.style.display =
+                preferred
+                    ? "inline-block"
+                    : "none";
+        }
+    );
+
+
+    ownerDoneButton.addEventListener(
+        "click",
+        () => {
+
+            const selected =
+                ownerSelect.value;
+
+
+            if (!selected) {
+
+                setMessage(
+                    "Bitte zuerst einen Nutzer auswählen.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            setPreferredPerson(
+                selected
             );
 
 
-        summary.textContent =
-            person.name;
+            updateOwnerDisplay();
+            renderPeople();
+        }
+    );
 
 
-        const body =
-            document.createElement(
-                "div"
+    ownerCancelButton.addEventListener(
+        "click",
+        () => {
+
+            rebuildOwnerSelect();
+            updateOwnerDisplay();
+        }
+    );
+
+
+    // ============================================================
+    // Personen darstellen
+    // ============================================================
+
+    function renderPeople() {
+        personsContainer.innerHTML =
+            "";
+
+
+        const preferred =
+            getPreferredPerson();
+
+
+        let list =
+            Array.from(
+                people.values()
             );
 
 
-        body.className =
-            "person-body";
+        if (preferred) {
+
+            list.sort(
+                (a, b) => {
+
+                    if (
+                        a.id === preferred
+                    ) {
+                        return -1;
+                    }
 
 
-        const current =
-            document.createElement(
-                "div"
+                    if (
+                        b.id === preferred
+                    ) {
+                        return 1;
+                    }
+
+
+                    return 0;
+                }
             );
+        }
 
 
-        current.className =
-            "person-status";
+        for (
+            const person
+            of list
+            ) {
+
+            const details =
+                document.createElement(
+                    "details"
+                );
 
 
-        current.textContent =
-            currentStatusText(
-                person
-            );
+            details.className =
+                "person";
 
 
-        body.innerHTML = `
+            if (
+                !preferred ||
+                person.id === preferred
+            ) {
+
+                details.open =
+                    true;
+            }
+
+
+            const summary =
+                document.createElement(
+                    "summary"
+                );
+
+
+            summary.textContent =
+                person.name;
+
+
+            const body =
+                document.createElement(
+                    "div"
+                );
+
+
+            body.className =
+                "person-body";
+
+
+            const current =
+                document.createElement(
+                    "div"
+                );
+
+
+            current.className =
+                "person-status";
+
+
+            current.textContent =
+                currentStatusText(
+                    person
+                );
+
+
+            body.innerHTML = `
 
             <label>
                 Status
@@ -1840,379 +1767,358 @@ function renderPeople()
         `;
 
 
-        body.prepend(
-            current
-        );
+            body.prepend(
+                current
+            );
 
 
-        details.appendChild(
-            summary
-        );
+            details.appendChild(
+                summary
+            );
 
 
-        details.appendChild(
-            body
-        );
+            details.appendChild(
+                body
+            );
 
 
-        personsContainer.appendChild(
-            details
-        );
+            personsContainer.appendChild(
+                details
+            );
 
 
-        document
-            .getElementById(
-                "status-" +
-                person.id
-            )
-            .value =
+            document
+                .getElementById(
+                    "status-" +
+                    person.id
+                )
+                .value =
                 person.status;
 
 
-        document
-            .getElementById(
-                "text-" +
-                person.id
-            )
-            .value =
+            document
+                .getElementById(
+                    "text-" +
+                    person.id
+                )
+                .value =
                 person.text;
-    }
+        }
 
 
-    document
-        .querySelectorAll(
-            ".update-button"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () =>
-                        updatePerson(
-                            button
-                                .dataset
-                                .person
-                        )
-                );
-            }
-        );
-}
-
-
-function currentStatusText(person)
-{
-    let result =
-        "Aktuell: " +
-        (
-            person.status ||
-            "–"
-        );
-
-
-    if (person.text) {
-
-        result +=
-            " – " +
-            person.text;
-    }
-
-
-    return result;
-}
-
-
-// ============================================================
-// Person aktualisieren
-// ============================================================
-
-async function updatePerson(id)
-{
-    const person =
-        people.get(id);
-
-
-    if (!person) {
-        return;
-    }
-
-
-    let status =
         document
-            .getElementById(
-                "status-" + id
+            .querySelectorAll(
+                ".update-button"
             )
-            .value
-            .trim();
+            .forEach(
+                button => {
 
-
-    let text =
-        document
-            .getElementById(
-                "text-" + id
-            )
-            .value
-            .trim();
-
-
-    if (
-        status.includes("|") ||
-        text.includes("|")
-    ) {
-
-        setMessage(
-            'Das Zeichen "|" kann nicht verwendet werden.',
-            "error"
-        );
-
-        return;
+                    button.addEventListener(
+                        "click",
+                        () =>
+                            updatePerson(
+                                button
+                                    .dataset
+                                    .person
+                            )
+                    );
+                }
+            );
     }
 
 
-    status =
-        status.replace(
-            /[\r\n]+/g,
-            " "
-        );
+    function currentStatusText(person) {
+        let result =
+            "Aktuell: " +
+            (
+                person.status ||
+                "–"
+            );
 
 
-    text =
-        text.replace(
-            /[\r\n]+/g,
-            " "
-        );
+        if (person.text) {
+
+            result +=
+                " – " +
+                person.text;
+        }
 
 
-    status =
-        normalizeGerman(status);
-
-    text =
-        normalizeGerman(text);
-
-
-    const command =
-        `SET|${id}|${status}|${text}`;
-
-
-    try {
-
-        setUpdateButtons(false);
-
-
-        setMessage(
-            "Sende Änderung …",
-            "info"
-        );
-
-
-        await sendCommand(
-            command
-        );
-
+        return result;
     }
-    catch (error) {
-
-        handleCommandError(
-            error
-        );
-    }
-}
 
 
-// ============================================================
-// Sonderzeichen
-// ============================================================
+    // ============================================================
+    // Person aktualisieren
+    // ============================================================
 
-function normalizeGerman(text)
-{
-    return text
-
-        .replaceAll("ä", "ae")
-        .replaceAll("ö", "oe")
-        .replaceAll("ü", "ue")
-        .replaceAll("Ä", "Ae")
-        .replaceAll("Ö", "Oe")
-        .replaceAll("Ü", "Ue")
-        .replaceAll("ß", "ss");
-}
+    async function updatePerson(id) {
+        const person =
+            people.get(id);
 
 
-// ============================================================
-// Buttons
-// ============================================================
-
-function setUpdateButtons(enabled)
-{
-    document
-        .querySelectorAll(
-            ".update-button"
-        )
-        .forEach(
-            button => {
-
-                button.disabled =
-                    !enabled;
-            }
-        );
-}
-
-
-// ============================================================
-// Fehler
-// ============================================================
-
-function handleCommandError(error)
-{
-    console.error(error);
-
-
-    setMessage(
-        "Bluetooth-Fehler: " +
-        error.message,
-        "error"
-    );
-
-
-    setUpdateButtons(true);
-}
-
-
-// ============================================================
-// Hilfsfunktion
-// ============================================================
-
-function delay(ms)
-{
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                ms
-            )
-    );
-}
-
-
-// ============================================================
-// PWA
-// ============================================================
-
-let deferredInstallPrompt =
-    null;
-
-
-window.addEventListener(
-    "beforeinstallprompt",
-    event => {
-
-        event.preventDefault();
-
-        deferredInstallPrompt =
-            event;
-
-
-        installButton.style.display =
-            "block";
-    }
-);
-
-
-installButton.addEventListener(
-    "click",
-    async () => {
-
-        if (!deferredInstallPrompt) {
+        if (!person) {
             return;
         }
 
 
-        deferredInstallPrompt.prompt();
+        let status =
+            document
+                .getElementById(
+                    "status-" + id
+                )
+                .value
+                .trim();
 
 
-        await deferredInstallPrompt
-            .userChoice;
+        let text =
+            document
+                .getElementById(
+                    "text-" + id
+                )
+                .value
+                .trim();
 
 
-        deferredInstallPrompt =
-            null;
+        if (
+            status.includes("|") ||
+            text.includes("|")
+        ) {
+
+            setMessage(
+                'Das Zeichen "|" kann nicht verwendet werden.',
+                "error"
+            );
+
+            return;
+        }
 
 
-        installButton.style.display =
-            "none";
+        status =
+            status.replace(
+                /[\r\n]+/g,
+                " "
+            );
+
+
+        text =
+            text.replace(
+                /[\r\n]+/g,
+                " "
+            );
+
+
+        status =
+            normalizeGerman(status);
+
+        text =
+            normalizeGerman(text);
+
+
+        const command =
+            `SET|${id}|${status}|${text}`;
+
+
+        try {
+
+            setUpdateButtons(false);
+
+
+            setMessage(
+                "Sende Änderung …",
+                "info"
+            );
+
+
+            await sendCommand(
+                command
+            );
+
+        } catch (error) {
+
+            handleCommandError(
+                error
+            );
+        }
     }
-);
 
 
-window.addEventListener(
-    "appinstalled",
-    () => {
+    // ============================================================
+    // Sonderzeichen
+    // ============================================================
 
-        installButton.style.display =
-            "none";
-    }
-);
+    function normalizeGerman(text) {
+        return text
 
-
-// ============================================================
-// Service Worker
-// ============================================================
-
-async function registerServiceWorker()
-{
-    if (!("serviceWorker" in navigator)) {
-        return;
+            .replaceAll("ä", "ae")
+            .replaceAll("ö", "oe")
+            .replaceAll("ü", "ue")
+            .replaceAll("Ä", "Ae")
+            .replaceAll("Ö", "Oe")
+            .replaceAll("Ü", "Ue")
+            .replaceAll("ß", "ss");
     }
 
 
-    try {
+    // ============================================================
+    // Buttons / Fehler
+    // ============================================================
 
-        await navigator.serviceWorker
-            .register("./sw.js");
+    function setUpdateButtons(enabled) {
+        document
+            .querySelectorAll(
+                ".update-button"
+            )
+            .forEach(
+                button => {
+
+                    button.disabled =
+                        !enabled;
+                }
+            );
+    }
 
 
-        console.log(
-            "Service Worker registriert"
+    function handleCommandError(error) {
+        console.error(error);
+
+
+        setMessage(
+            "Bluetooth-Fehler: " +
+            error.message,
+            "error"
         );
 
-    }
-    catch (error) {
 
-        console.error(
-            "Service Worker Fehler:",
-            error
+        setUpdateButtons(true);
+    }
+
+
+    function delay(ms) {
+        return new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    ms
+                )
         );
     }
-}
 
 
-// ============================================================
-// Start
-// ============================================================
+    // ============================================================
+    // PWA Installation
+    // ============================================================
 
-connectButton.addEventListener(
-    "click",
-    connect
-);
+    let deferredInstallPrompt =
+        null;
 
 
-window.addEventListener(
-    "load",
-    async () => {
+    window.addEventListener(
+        "beforeinstallprompt",
+        event => {
 
-        await registerServiceWorker();
-
-
-        /*
-         * Kurze Verzögerung, damit die Seite
-         * erst vollständig dargestellt wird.
-         */
-
-        await delay(250);
+            event.preventDefault();
 
 
-        await tryAutoReconnect();
+            deferredInstallPrompt =
+                event;
+
+
+            installButton.style.display =
+                "block";
+        }
+    );
+
+
+    installButton.addEventListener(
+        "click",
+        async () => {
+
+            if (!deferredInstallPrompt) {
+                return;
+            }
+
+
+            deferredInstallPrompt.prompt();
+
+
+            await deferredInstallPrompt
+                .userChoice;
+
+
+            deferredInstallPrompt =
+                null;
+
+
+            installButton.style.display =
+                "none";
+        }
+    );
+
+
+    window.addEventListener(
+        "appinstalled",
+        () => {
+
+            installButton.style.display =
+                "none";
+        }
+    );
+
+
+    // ============================================================
+    // Service Worker
+    // ============================================================
+
+    async function registerServiceWorker() {
+        if (!("serviceWorker" in navigator)) {
+            return;
+        }
+
+
+        try {
+
+            await navigator.serviceWorker
+                .register("./sw.js");
+
+
+            console.log(
+                "Service Worker registriert"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Service Worker Fehler:",
+                error
+            );
+        }
     }
-);
+
+
+    // ============================================================
+    // Start
+    // ============================================================
+
+    connectButton.addEventListener(
+        "click",
+        connect
+    );
+
+
+    window.addEventListener(
+        "load",
+        async () => {
+
+            await registerServiceWorker();
+
+
+            setMessage(
+                "Bereit zum Verbinden.",
+                "info"
+            );
+        }
+    );
 
 </script>
 
