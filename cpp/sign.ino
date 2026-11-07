@@ -12,7 +12,7 @@
 #include <Fonts/FreeMonoBold12pt7b.h>
 #include <Fonts/FreeMonoBold18pt7b.h>
 
-#include "config.h"
+#include "configuration.h"
 
 
 using namespace Adafruit_LittleFS_Namespace;

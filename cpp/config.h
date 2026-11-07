@@ -1,26 +1,24 @@
 #pragma once
 
 // ============================================================
-// DWD Raumschild - lokale Konfiguration
+// Raumschild - lokale Konfiguration
 // ============================================================
 
 // Raum
 // Wird derzeit nicht auf dem Display dargestellt,
 // sondern z. B. für den BLE-Gerätenamen verwendet.
-#define ROOM_NUMBER "205"
+#define ROOM_NUMBER "123"
 
 // BLE
-#define BLE_DEVICE_NAME "RAUMSCHILD-205"
+#define BLE_DEVICE_NAME "ble-device-name"
 
 // Organisation
-#define ORGANIZATION \
-  "Meteorologisches Observatorium Lindenberg"
+#define ORGANIZATION "organization"
 
-#define DEPARTMENT \
-  "Sachgebiet 2 - Grenzschichtprozesse"
+#define DEPARTMENT "department"
 
 // Standardzustand, falls noch kein gespeicherter Zustand existiert
-#define DEFAULT_STATUS "Anwesend"
+#define DEFAULT_STATUS "out of office"
 #define DEFAULT_TEXT ""
 
 // ------------------------------------------------------------
@@ -33,8 +31,8 @@ struct PersonConfig {
 };
 
 static const PersonConfig PERSONS[] = {
-  { "P1", "Kathleen Dix" },
-  { "P2", "Thomas Kaulke" }
+  { "P1", "person 1" },
+  { "P2", "person 2" }
 };
 
 static const size_t PERSON_COUNT =
