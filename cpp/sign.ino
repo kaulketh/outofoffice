@@ -523,7 +523,7 @@ void updateDisplay() {
 
   display.init(115200, true, 10, false);
 
-  display.setRotation(0);
+  display.setRotation(2); //0 none, 2 180°
   display.setFullWindow();
 
   display.firstPage();
