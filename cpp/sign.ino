@@ -1,5 +1,6 @@
 #include <Adafruit_LittleFS.h>
 #include <Adafruit_TinyUSB.h>
+#include <Adafruit_GFX.h>
 #include <Fonts/FreeMono12pt7b.h>
 #include <Fonts/FreeMono9pt7b.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
@@ -458,31 +459,42 @@ void drawPerson(size_t index, int16_t top, int16_t height) {
 
 void drawFooter(int16_t top) {
   constexpr int16_t LEFT = 28;
+  int16_t x1, y1;
+  uint16_t w, h;
 
   // kräftige obere Begrenzung
   display.drawLine(LEFT, top, display.width() - LEFT, top, GxEPD_BLACK);
-
   display.drawLine(LEFT, top + 1, display.width() - LEFT, top + 1, GxEPD_BLACK);
 
   // --------------------------------------------------------
   // Sachgebiet
   // --------------------------------------------------------
 
-  display.setFont(&FreeSansBold12pt7b);
 
-  display.setCursor(LEFT, top + 60);
 
-  display.print(DEPARTMENT);
+  const char* line1 =DEPARTMENT;
+  // display.setFont(&FreeSansBold12pt7b);
+  display.setFont(&FreeSansBold18pt7b);
+  display.getTextBounds(line1, 0, 0, &x1, &y1, &w, &h);
+  // center
+  //display.setCursor((display.width() - w) / 2 - x1, top + 70);
+  // left
+  display.setCursor(LEFT, top + 70);
+
+  display.print(line1);
 
   // --------------------------------------------------------
   // Organisation
   // --------------------------------------------------------
-
+  const char* line2 = ORGANIZATION;
   display.setFont(&FreeSansBold12pt7b);
+  display.getTextBounds(line2, 0, 0, &x1, &y1, &w, &h);
+  // center
+  //display.setCursor((display.width() - w) / 2 - x1, top + 105);
+  // left
+  display.setCursor(LEFT, top + 105);
 
-  display.setCursor(LEFT, top + 91);
-
-  display.print(ORGANIZATION);
+  display.print(line2);
 }
 
 // ============================================================
