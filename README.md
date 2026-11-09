@@ -17,5 +17,5 @@ Updates are sent via Bluetooth from a smartphone. A small web app can be used to
 
 ### notes
 - BLE (bluetooth low energy) web request required
-- works Chromium based browsers (Google Chrome, Microsoft Edge, Samsung Internet)
+- works with Chromium based browsers (Google Chrome, Microsoft Edge, Samsung Internet)
 - tested with Android mobile and Windows PC
