@@ -1,12 +1,12 @@
 const CACHE_NAME =
-    "outofoffice-v5";
+    "outofoffice-v6";
 
 const APP_FILES = [
     "./",
     "./index.html",
     "./manifest.json",
     "./icon.svg",
-    "./assets/Kaulketh%20Maker%20Projects%20Branding%20banner.png"
+    "./assets/kaulketh-maker-projects.png"
 ];
 
 
