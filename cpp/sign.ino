@@ -255,6 +255,7 @@ void drawPerson(size_t index, int16_t top, int16_t height) {
 
     String status = personState[index].status;
     if (status.length() > 0) {
+        status.toUpperCase();
         display.setFont(&FreeSansBold12pt7b);
         display.setCursor(LEFT, top + 93);
         display.print(status);
