@@ -12,7 +12,7 @@
 #include <GxEPD2_BW.h>
 #include <InternalFileSystem.h>
 #include <bluefruit.h>
-#include "config.h"
+#include "configuration.h"
 
 using namespace Adafruit_LittleFS_Namespace;
 
