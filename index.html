@@ -12,7 +12,7 @@
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
 
-    <title>DWD Raumschild</title>
+    <title>O³ – OutOfOffice</title>
 
     <style>
         :root {
@@ -410,12 +410,26 @@
             color: var(--gray);
         }
 
-        .maker-banner-wrap {
+        .project-branding {
             margin-top: 24px;
             padding-top: 16px;
-
             border-top: 1px solid var(--border);
+            text-align: center;
+        }
 
+        .project-branding h2 {
+            margin: 0;
+            color: var(--blue);
+            font-size: clamp(1.5rem, 6vw, 2rem);
+        }
+
+        .project-branding p {
+            margin: 6px 0 16px;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .maker-banner-wrap {
             display: flex;
             justify-content: center;
         }
@@ -642,17 +656,21 @@
 
         <div id="persons"></div>
 
+    </section>
 
+    <footer class="project-branding">
+        <h2>O³ OutOfOffice</h2>
+        <p>User Interface for BLE E-Paper Room Signs</p>
         <div class="maker-banner-wrap">
             <img
-                    src="https://raw.githubusercontent.com/kaulketh/kaulketh/master/assets/Kaulketh%20Maker%20Projects%20Branding%20banner.png"
+                    src="./assets/Kaulketh%20Maker%20Projects%20Branding%20banner.png"
                     alt="Kaulketh Maker Projects"
                     class="maker-banner"
             >
         </div>
 
 
-    </section>
+    </footer>
 
 </main>
 

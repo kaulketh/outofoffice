@@ -1,6 +1,6 @@
 {
-    "name": "DWD Raumschild",
-    "short_name": "Raumschild",
+    "name": "O³ – OutOfOffice",
+    "short_name": "O³ – OutOfOffice",
     "description": "Bedienoberfläche für BLE-E-Paper-Raumschilder",
     "start_url": "./",
     "scope": "./",
