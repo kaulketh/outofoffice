@@ -5,7 +5,7 @@ const APP_FILES = [
     "./",
     "./index.html",
     "./manifest.json",
-    "./icon.svg",
+    "./assets/icon.svg",
     "./assets/kaulketh-maker-projects.png"
 ];
 
