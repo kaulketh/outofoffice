@@ -18,6 +18,7 @@ Updates are sent via Bluetooth from a smartphone. A small web app can be used to
 - any small parts
 
 ### notes
+- The files in the `hardware/3D` folder were developed for a VARIO SIGN Rondo room sign from  [Wolk Gruppe AG](https://www.wolkdirekt.com/signsystems.html).
 - BLE (bluetooth low energy) web request required
 - works with Chromium based browsers (Google Chrome, Microsoft Edge, Samsung Internet)
 - tested with Android mobile and Windows PC
