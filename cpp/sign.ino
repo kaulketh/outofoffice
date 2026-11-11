@@ -485,7 +485,7 @@ void setup() {
     delay(1000);
     Serial.println();
     Serial.println("================================");
-    Serial.println(" DWD Raumschild");
+    Serial.println(" Raumschild");
     Serial.println("================================");
 
     for (size_t i = 0; i < PERSON_COUNT; i++) {
