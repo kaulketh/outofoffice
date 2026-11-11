@@ -958,13 +958,13 @@
             );
 
 
-            device =
-                await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: [
-                        NUS_SERVICE
-                    ]
-                });
+            device = await navigator.bluetooth.requestDevice({
+                filters: [
+                    {
+                        services: [NUS_SERVICE]
+                    }
+                ]
+            });
 
 
             device.addEventListener(
