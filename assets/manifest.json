@@ -2,14 +2,14 @@
     "name": "O³ – OutOfOffice",
     "short_name": "O³ – OutOfOffice",
     "description": "Bedienoberfläche für BLE-E-Paper-Raumschilder",
-    "start_url": "./",
-    "scope": "./",
+    "start_url": "../",
+    "scope": "../",
     "display": "standalone",
     "background_color": "#f4f5f6",
     "theme_color": "#174a7e",
     "icons": [
         {
-            "src": "./icon.svg",
+            "src": "./images/icon.svg",
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any maskable"
