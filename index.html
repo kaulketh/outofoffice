@@ -960,14 +960,7 @@
 
             device =
                 await navigator.bluetooth.requestDevice({
-
-                    filters: [
-                        {
-                            namePrefix:
-                                "RAUMSCHILD-"
-                        }
-                    ],
-
+                    acceptAllDevices: true,
                     optionalServices: [
                         NUS_SERVICE
                     ]
@@ -1376,7 +1369,7 @@
                 document
                     .getElementById("organizationTop")
                     .textContent =
-                        organization;
+                    organization;
 
                 break;
 
