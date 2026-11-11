@@ -498,7 +498,7 @@
         <div class="header-info">
 
             <div id="organizationTop">
-                Bluetooth-Verbindung herstellen...
+                Auswahl Bluetooth-Device
             </div>
 
             <div id="departmentTop"></div>
@@ -523,7 +523,7 @@
                     id="connectButton"
                     class="primary">
 
-                Raumschild verbinden
+                Verbinden
 
             </button>
 
@@ -1026,6 +1026,11 @@
 
             resetRemoteData();
 
+            const bleName = device.name || "unknown";
+
+            document.getElementById("bleDeviceNameTop").textContent =
+                "BLE: " + bleName;
+
 
             setMessage(
                 "Verbunden – lese Konfiguration …",
@@ -1352,9 +1357,9 @@
 
                 document
                     .getElementById("title")
-                    .textContent =
-                    "BG Raum " +
-                    roomNumber;
+                    .textContent = device.name;
+
+                document.title = (device?.name || "O³ OutOfOffice");
 
                 break;
 
