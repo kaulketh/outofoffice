@@ -1,0 +1,326 @@
+.connection-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.connection-row button {
+    flex: 1;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 12px;
+    border-radius: 50%;
+    background: #999;
+}
+
+.dot.connected {
+    background: var(--green);
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.primary {
+    background: var(--blue);
+    color: white;
+}
+
+.secondary {
+    background: transparent;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+}
+
+.small-button {
+    padding: 7px 11px;
+    font-size: 0.85rem;
+}
+
+#message {
+    min-height: 1.5em;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.ok {
+    color: var(--green);
+}
+
+.error {
+    color: var(--red);
+}
+
+.info {
+    color: var(--blue);
+}
+
+
+/* Akku */
+
+#batteryPanel {
+    display: none;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.battery-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+    font-size: 0.9rem;
+}
+
+.battery-label {
+    font-weight: 600;
+}
+
+#batteryValue {
+    color: var(--gray);
+}
+
+.battery-track {
+    width: 100%;
+    height: 9px;
+    border-radius: 10px;
+    background: var(--light-gray);
+    overflow: hidden;
+}
+
+#batteryBar {
+    height: 100%;
+    width: 0;
+    border-radius: 10px;
+    background: var(--green);
+    transition: width 0.3s ease;
+}
+
+#batteryBar.warning {
+    background: var(--yellow);
+}
+
+#batteryBar.low {
+    background: var(--red);
+}
+
+
+/* Nutzer */
+
+#ownerSetupPanel,
+#ownerCompactPanel,
+#personsPanel {
+    display: none;
+}
+
+.owner-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.owner-info {
+    min-width: 0;
+}
+
+.owner-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom: 2px;
+}
+
+#ownerCompactName {
+    font-size: 1.05rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 12px 0 5px;
+    color: var(--text);
+}
+
+select,
+input,
+textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 10px;
+    font: inherit;
+    color: var(--text);
+    background: var(--panel);
+}
+
+textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+.owner-setup-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+
+/* Personen */
+
+details.person {
+    background: var(--panel);
+    border-radius: 12px;
+    margin-bottom: 14px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    overflow: hidden;
+}
+
+details.person[open] {
+    border: 1px solid var(--blue);
+}
+
+summary {
+    padding: 16px 18px;
+    cursor: pointer;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--blue);
+}
+
+.person-body {
+    padding: 0 18px 18px;
+}
+
+.person-status {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-top: -5px;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+}
+
+.update-button {
+    width: 100%;
+    margin-top: 16px;
+    background: var(--blue);
+    color: white;
+}
+
+.organization {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 0.78rem;
+    text-align: center;
+    color: var(--gray);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#organization {
+    font-weight: 600;
+}
+
+#department {
+    margin-top: 3px;
+}
+
+
+/* PWA */
+
+#installButton {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+}
+
+
+.project-branding {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+.project-branding h2 {
+    margin: 0;
+    color: var(--blue);
+    font-size: clamp(1.5rem, 6vw, 2rem);
+}
+
+.project-branding p {
+    margin: 6px 0 16px;
+    color: var(--gray);
+    font-size: 0.85rem;
+}
+
+.maker-banner-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+
+.maker-banner {
+    display: block;
+
+    width: min(100%, 520px);
+    height: auto;
+
+    opacity: 0.78;
+
+    border-radius: 8px;
+}
+
+.battery-warning {
+    display: none;
+    margin-top: 10px;
+    padding: 9px 11px;
+
+    border-radius: 7px;
+
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.battery-warning.warning {
+    display: block;
+
+    color: var(--yellow);
+
+    border: 1px solid var(--yellow);
+}
+
+.battery-warning.critical {
+    display: block;
+
+    color: var(--red);
+
+    border: 1px solid var(--red);
+}
+
+.last-connected {
+    margin-top: 5px;
+
+    font-size: 0.75rem;
+
+    color: var(--gray);
+}
