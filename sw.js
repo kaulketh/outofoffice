@@ -1,5 +1,5 @@
 const CACHE_NAME =
-    "outofoffice-v8";
+    "outofoffice-v8.1";
 
 const APP_FILES = [
     "./",
