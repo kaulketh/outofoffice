@@ -1,0 +1,67 @@
+:root {
+    --blue: #174a7e;
+    --green: #287a3e;
+    --yellow: #b47b00;
+    --red: #b3261e;
+    --gray: #666;
+    --light-gray: #e5e5e5;
+    --background: #f4f5f6;
+    --panel: #ffffff;
+    --text: #222;
+    --border: #ccc;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+
+    font-family: system-ui,
+    -apple-system,
+    sans-serif;
+
+    background: var(--background);
+    color: var(--text);
+}
+
+main {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0;
+    color: var(--blue);
+    font-size: 1.8rem;
+}
+
+.header-info {
+    margin-top: 6px;
+    color: var(--gray);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+#organizationTop {
+    font-weight: 600;
+}
+
+#departmentTop {
+    font-size: 0.9rem;
+}
+
+.panel {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}

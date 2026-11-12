@@ -1,0 +1,24 @@
+/* Dark Mode */
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #111315;
+                --panel: #1e1e1e;
+                --text: #f0f0f0;
+                --gray: #b5b5b5;
+                --border: #555;
+                --light-gray: #292929;
+                --blue: #8ec5ff;
+            }
+
+            .primary,
+            .update-button {
+                background: #1c4b82;
+                color: white;
+            }
+
+            .secondary {
+                color: #8ec5ff;
+                border-color: #4778aa;
+            }
+        }
