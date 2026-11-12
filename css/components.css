@@ -264,13 +264,13 @@ summary {
 .project-branding h2 {
     margin: 0;
     color: var(--blue);
-    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-size: clamp(1rem, 3vw, 0.7rem);
 }
 
 .project-branding p {
     margin: 6px 0 16px;
     color: var(--gray);
-    font-size: 0.85rem;
+    font-size: 0.6rem;
 }
 
 .maker-banner-wrap {
