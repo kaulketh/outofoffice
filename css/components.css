@@ -255,16 +255,18 @@ summary {
 
 
 .project-branding {
-    margin-top: 24px;
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+    margin: 24px auto 0;
     padding-top: 16px;
-    border-top: 1px solid var(--border);
     text-align: center;
 }
 
 .project-branding h2 {
     margin: 0;
     color: var(--blue);
-    font-size: clamp(1rem, 3vw, 0.7rem);
+    font-size: clamp(0.7rem, 3vw, 1rem);
 }
 
 .project-branding p {
@@ -285,12 +287,10 @@ summary {
 
 .maker-banner {
     display: block;
-
-    width: min(100%, 520px);
-    height: auto;
-
+    justify-content: center;
+    width: min(100%, 500px);
+    height: 100%;
     opacity: 0.78;
-
     border-radius: 8px;
 }
 
