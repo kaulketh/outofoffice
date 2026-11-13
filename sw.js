@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "outofoffice-";
-const CACHE_NAME = `${CACHE_PREFIX}V16.2`;
+const CACHE_NAME = `${CACHE_PREFIX}V16.3`;
 
 const APP_FILES = [
     "./",
