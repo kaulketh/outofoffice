@@ -1,6 +1,8 @@
-# O³ – OutOfOffice
+![VividBlauesO³OutOfOffice-Logo_small.png](assets/VividBlauesO³OutOfOffice-Logo_small.png)
 
 User Interface for BLE E-Paper Room Signs
+
+---
 
 ### about
 
