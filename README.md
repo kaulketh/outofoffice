@@ -1,6 +1,6 @@
 ![VividBlauesO³OutOfOffice-Logo_small.png](assets/VividBlauesO³OutOfOffice-Logo_small.png)
 
-User Interface for BLE E-Paper Room Signs
+###### user interface for bluetooth low energy e-paper room signs
 
 ---
 
