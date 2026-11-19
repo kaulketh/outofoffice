@@ -157,16 +157,46 @@ float readBatteryVoltage() {
     return batteryVoltage;
 }
 
+
+struct LipoPoint {
+    float voltage;
+    float percent;
+};
+
+const LipoPoint lipoTable[] = {
+    {3.50f, 0.0f},
+    {3.60f, 5.0f},
+    {3.70f, 15.0f},
+    {3.75f, 25.0f},
+    {3.80f, 40.0f},
+    {3.84f, 50.0f},
+    {3.87f, 60.0f},
+    {3.95f, 70.0f},
+    {4.02f, 80.0f},
+    {4.11f, 90.0f},
+    {4.15f, 95.0f},
+    {4.20f, 100.0f}
+};
+
+constexpr int lipoTableSize = sizeof(lipoTable) / sizeof(lipoTable[0]);
+
 int batteryPercent(float voltage) {
-    // Grobe LiPo-Schätzung, bewusst nur ein Näherungswert.
-    if (voltage >= 4.20f) return 100;
-    if (voltage >= 4.10f) return 90;
-    if (voltage >= 4.00f) return 80;
-    if (voltage >= 3.90f) return 70;
-    if (voltage >= 3.80f) return 55;
-    if (voltage >= 3.70f) return 40;
-    if (voltage >= 3.60f) return 20;
-    if (voltage >= 3.50f) return 10;
+    if (voltage <= lipoTable[0].voltage) return 0;
+    if (voltage >= lipoTable[lipoTableSize - 1].voltage) return 100;
+
+    for (int i = 0; i < lipoTableSize - 1; i++) {
+        const LipoPoint& a = lipoTable[i];
+        const LipoPoint& b = lipoTable[i + 1];
+
+        if (voltage >= a.voltage && voltage <= b.voltage) {
+            const float percent = a.percent +
+            (voltage - a.voltage) *
+            (b.percent - a.percent) /
+            (b.voltage - a.voltage);
+
+            return static_cast<int>(percent + 0.5f);
+        }
+    }
     return 0;
 }
 
