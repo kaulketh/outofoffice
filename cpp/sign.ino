@@ -14,6 +14,10 @@
 #include <bluefruit.h>
 #include "configuration.h"
 
+#define FONT_NAME_IMPL(family, size) family##size##pt7b
+#define FONT_NAME(family, size) FONT_NAME_IMPL(family, size)
+
+
 using namespace Adafruit_LittleFS_Namespace;
 
 constexpr const char* STATE_FILE = "/sign.txt";
@@ -274,6 +278,7 @@ uint16_t maxWidth, uint8_t maxLines, uint16_t lineHeight) {
     }
 }
 
+
 void drawPerson(size_t index, int16_t top, int16_t height) {
     constexpr int16_t LEFT = 28;
     constexpr int16_t RIGHT = 28;
@@ -286,18 +291,28 @@ void drawPerson(size_t index, int16_t top, int16_t height) {
     String status = personState[index].status;
     if (status.length() > 0) {
         status.toUpperCase();
-        display.setFont(&FreeSansBold12pt7b);
-        display.setCursor(LEFT, top + 93);
+        display.setFont(&FONT_NAME(STATUS_FONT_FAMILY, STATUS_FONT_SIZE));
+        display.setCursor(LEFT, top + STATUS_Y_OFFSET);
         display.print(status);
     }
+
     if (personState[index].text.length() > 0) {
-        display.setFont(&FreeSansBold9pt7b);
-        drawWrappedText(personState[index].text, LEFT, top + 125, usableWidth, 2, 25);
+        display.setFont(&FONT_NAME(FREETEXT_FONT_FAMILY, FREETEXT_FONT_SIZE));
+        drawWrappedText(
+        personState[index].text,
+        LEFT,
+        top + FREETEXT_Y_OFFSET,
+        usableWidth,
+        2,
+        FREETEXT_LINE_HEIGHT
+        );
     }
+
     const int16_t y = top + height - 1;
     const uint8_t lineThickness = 3;
-    display.fillRect(LEFT, y, display.width() - LEFT - RIGHT, lineThickness, GxEPD_BLACK);
+    display.fillRect(LEFT, y, usableWidth, lineThickness, GxEPD_BLACK);
 }
+
 
 void drawFooter(int16_t top) {
     constexpr int16_t LEFT = 28;
