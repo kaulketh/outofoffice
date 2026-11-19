@@ -17,7 +17,6 @@
 #define FONT_NAME_IMPL(family, size) family##size##pt7b
 #define FONT_NAME(family, size) FONT_NAME_IMPL(family, size)
 
-
 using namespace Adafruit_LittleFS_Namespace;
 
 constexpr const char* STATE_FILE = "/sign.txt";
