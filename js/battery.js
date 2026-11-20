@@ -38,7 +38,7 @@ function renderBattery() {
 
     batteryPanel.style.display = "block";
     batteryValue.textContent =
-        `${batteryVoltage.toFixed(2)} V · ca. ${batteryPercent} %`;
+        `${batteryVoltage.toFixed(2)} V · ${batteryPercent} %`;
 
     const percent = Math.max(0, Math.min(100, batteryPercent));
     batteryBar.style.width = `${percent}%`;
