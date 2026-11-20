@@ -183,6 +183,18 @@ const LipoPoint lipoTable[] = {
 
 constexpr int lipoTableSize = sizeof(lipoTable) / sizeof(lipoTable[0]);
 
+/**
+ * Converts a measured 1S LiPo battery voltage into a rounded state-of-charge
+ * percentage (0..100) using piecewise linear interpolation over `lipoTable`.
+ *
+ * - Clamps values at or below the lowest voltage point to 0%, and at or above
+ *   the highest voltage point to 100%.
+ * - Assumes `lipoTable` is sorted in ascending order by voltage with distinct
+ *   voltage values (no duplicate voltages, which would cause division by zero).
+ * - Interpolates linearly between adjacent points (a, b) enclosing `voltage`,
+ *   then rounds to the nearest integer via `+ 0.5f`.
+ * - Falls back to 0 if no interval matches (e.g., if `voltage` is NaN).
+ */
 int batteryPercent(float voltage) {
     if (voltage <= lipoTable[0].voltage) return 0;
     if (voltage >= lipoTable[lipoTableSize - 1].voltage) return 100;
