@@ -14,6 +14,9 @@
 #include <bluefruit.h>
 #include "configuration.h"
 
+#define FONT_NAME_IMPL(family, size) family##size##pt7b
+#define FONT_NAME(family, size) FONT_NAME_IMPL(family, size)
+
 using namespace Adafruit_LittleFS_Namespace;
 
 constexpr const char* STATE_FILE = "/sign.txt";
@@ -157,16 +160,46 @@ float readBatteryVoltage() {
     return batteryVoltage;
 }
 
+
+struct LipoPoint {
+    float voltage;
+    float percent;
+};
+
+const LipoPoint lipoTable[] = {
+    {3.50f, 0.0f},
+    {3.60f, 5.0f},
+    {3.70f, 15.0f},
+    {3.75f, 25.0f},
+    {3.80f, 40.0f},
+    {3.84f, 50.0f},
+    {3.87f, 60.0f},
+    {3.95f, 70.0f},
+    {4.02f, 80.0f},
+    {4.11f, 90.0f},
+    {4.15f, 95.0f},
+    {4.20f, 100.0f}
+};
+
+constexpr int lipoTableSize = sizeof(lipoTable) / sizeof(lipoTable[0]);
+
 int batteryPercent(float voltage) {
-    // Grobe LiPo-Schätzung, bewusst nur ein Näherungswert.
-    if (voltage >= 4.20f) return 100;
-    if (voltage >= 4.10f) return 90;
-    if (voltage >= 4.00f) return 80;
-    if (voltage >= 3.90f) return 70;
-    if (voltage >= 3.80f) return 55;
-    if (voltage >= 3.70f) return 40;
-    if (voltage >= 3.60f) return 20;
-    if (voltage >= 3.50f) return 10;
+    if (voltage <= lipoTable[0].voltage) return 0;
+    if (voltage >= lipoTable[lipoTableSize - 1].voltage) return 100;
+
+    for (int i = 0; i < lipoTableSize - 1; i++) {
+        const LipoPoint& a = lipoTable[i];
+        const LipoPoint& b = lipoTable[i + 1];
+
+        if (voltage >= a.voltage && voltage <= b.voltage) {
+            const float percent = a.percent +
+            (voltage - a.voltage) *
+            (b.percent - a.percent) /
+            (b.voltage - a.voltage);
+
+            return static_cast<int>(percent + 0.5f);
+        }
+    }
     return 0;
 }
 
@@ -244,6 +277,7 @@ uint16_t maxWidth, uint8_t maxLines, uint16_t lineHeight) {
     }
 }
 
+
 void drawPerson(size_t index, int16_t top, int16_t height) {
     constexpr int16_t LEFT = 28;
     constexpr int16_t RIGHT = 28;
@@ -256,18 +290,28 @@ void drawPerson(size_t index, int16_t top, int16_t height) {
     String status = personState[index].status;
     if (status.length() > 0) {
         status.toUpperCase();
-        display.setFont(&FreeSansBold12pt7b);
-        display.setCursor(LEFT, top + 93);
+        display.setFont(&FONT_NAME(STATUS_FONT_FAMILY, STATUS_FONT_SIZE));
+        display.setCursor(LEFT, top + STATUS_Y_OFFSET);
         display.print(status);
     }
+
     if (personState[index].text.length() > 0) {
-        display.setFont(&FreeSansBold9pt7b);
-        drawWrappedText(personState[index].text, LEFT, top + 125, usableWidth, 2, 25);
+        display.setFont(&FONT_NAME(FREETEXT_FONT_FAMILY, FREETEXT_FONT_SIZE));
+        drawWrappedText(
+        personState[index].text,
+        LEFT,
+        top + FREETEXT_Y_OFFSET,
+        usableWidth,
+        2,
+        FREETEXT_LINE_HEIGHT
+        );
     }
+
     const int16_t y = top + height - 1;
     const uint8_t lineThickness = 3;
-    display.fillRect(LEFT, y, display.width() - LEFT - RIGHT, lineThickness, GxEPD_BLACK);
+    display.fillRect(LEFT, y, usableWidth, lineThickness, GxEPD_BLACK);
 }
+
 
 void drawFooter(int16_t top) {
     constexpr int16_t LEFT = 28;
