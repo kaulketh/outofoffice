@@ -38,7 +38,7 @@ function renderBattery() {
 
     batteryPanel.style.display = "block";
     batteryValue.textContent =
-        `${batteryVoltage.toFixed(2)} V · ${batteryPercent} %`;
+        `${batteryVoltage.toFixed(2)} V  ≈${batteryPercent} %`;
 
     const percent = Math.max(0, Math.min(100, batteryPercent));
     batteryBar.style.width = `${percent}%`;
@@ -46,14 +46,14 @@ function renderBattery() {
 
     batteryWarning.classList.remove("warning", "critical");
     batteryWarning.style.display = "none";
-        /* from ~20% */
+        /* less than ~20% -> red bar*/
     if (batteryVoltage < 3.72) {
         batteryBar.classList.add("low");
         batteryWarning.textContent = "Akku bald laden.";
         batteryWarning.classList.add("critical");
         batteryWarning.style.display = "block";
-    } else if (batteryVoltage < 3.86) {
-        /* from ~55% */
+    } else if (batteryVoltage < 3.84) {
+        /* less than ~50% -> yellow bar*/
         batteryBar.classList.add("warning");
         batteryWarning.textContent =
             "Akkustand niedrig – bei Gelegenheit laden.";
