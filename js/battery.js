@@ -46,13 +46,14 @@ function renderBattery() {
 
     batteryWarning.classList.remove("warning", "critical");
     batteryWarning.style.display = "none";
-
-    if (batteryVoltage < 3.60) {
+        /* from ~20% */
+    if (batteryVoltage < 3.72) {
         batteryBar.classList.add("low");
         batteryWarning.textContent = "Akku bald laden.";
         batteryWarning.classList.add("critical");
         batteryWarning.style.display = "block";
-    } else if (batteryVoltage < 3.80) {
+    } else if (batteryVoltage < 3.86) {
+        /* from ~55% */
         batteryBar.classList.add("warning");
         batteryWarning.textContent =
             "Akkustand niedrig – bei Gelegenheit laden.";
