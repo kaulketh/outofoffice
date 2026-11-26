@@ -31,12 +31,16 @@ constexpr uint8_t EPD_PWR = D5;
 GxEPD2_BW<GxEPD2_583_T8, GxEPD2_583_T8::HEIGHT / 2> display(
 GxEPD2_583_T8(EPD_CS, EPD_DC, EPD_RST, EPD_BUSY));
 
-BLEUart bleuart;
+BLEUart bleuart(512);
+
 String rxBuffer;
 bool rxPending = false;
+bool rxOverflow = false;
 unsigned long lastRxMillis = 0;
 
-// Kleine Pakete verhindern überlaufende Notification-Puffer.
+constexpr size_t RX_MAX_LENGTH = 512;
+constexpr unsigned long LEGACY_RX_TIMEOUT_MS = 60;
+
 constexpr size_t BLE_TX_CHUNK_SIZE = 16;
 constexpr uint16_t BLE_TX_PAUSE_MS = 25;
 constexpr uint8_t BLE_TX_MAX_RETRIES = 20;
@@ -580,17 +584,7 @@ void processCommand(String command) {
     sendLine("READY");
 }
 
-void bleuartRxCallback(uint16_t connHandle) {
-    (void)connHandle;
-    while (bleuart.available()) {
-        char c = static_cast<char>(bleuart.read());
-        if (rxBuffer.length() < 512) {
-            rxBuffer += c;
-        }
-    }
-    rxPending = true;
-    lastRxMillis = millis();
-}
+
 
 void connectCallback(uint16_t connHandle) {
     BLEConnection* connection = Bluefruit.Connection(connHandle);
@@ -652,7 +646,7 @@ void setup() {
     Bluefruit.Periph.setConnectCallback(connectCallback);
     Bluefruit.Periph.setDisconnectCallback(disconnectCallback);
     bleuart.begin();
-    bleuart.setRxCallback(bleuartRxCallback);
+
     startAdvertising();
 
     Serial.println();
@@ -674,11 +668,57 @@ void setup() {
     Serial.println("Warte auf BLE ...");
 }
 
+void resetRxBuffer() {
+    rxBuffer = "";
+    rxPending = false;
+    rxOverflow = false;
+}
+
+void processReceivedCommand(bool framed) {
+    String command = rxBuffer;
+    bool overflow = rxOverflow;
+
+    resetRxBuffer();
+
+    if (!Bluefruit.connected() || disconnectPending) {
+        return;
+    }
+
+    if (overflow) {
+        abortTransaction();
+        sendLine("ERR|RX_OVERFLOW");
+        return;
+    }
+
+    if (command.startsWith("TX|")) {
+        if (!framed) {
+            abortTransaction();
+            sendLine("ERR|INCOMPLETE_COMMAND");
+            return;
+        }
+
+        command = command.substring(3);
+    } else if (transactionActive ||
+    command == "BEGIN" ||
+    command == "COMMIT" ||
+    command == "ABORT") {
+        abortTransaction();
+        sendLine("ERR|TRANSACTION_FRAME_REQUIRED");
+        return;
+    }
+
+    processCommand(command);
+}
+
 void loop() {
     if (disconnectPending) {
         disconnectPending = false;
-        rxBuffer = "";
-        rxPending = false;
+
+        resetRxBuffer();
+
+        while (bleuart.available()) {
+            bleuart.read();
+        }
 
         if (transactionActive) {
             abortTransaction();
@@ -689,16 +729,39 @@ void loop() {
     if (transactionActive &&
     millis() - transactionLastActivity > TRANSACTION_TIMEOUT_MS) {
         abortTransaction();
+        resetRxBuffer();
         sendLine("ERR|TRANSACTION_TIMEOUT");
     }
 
-    if (rxPending && millis() - lastRxMillis > 60) {
-        String command = rxBuffer;
-        rxBuffer = "";
-        rxPending = false;
+    while (bleuart.available() &&
+    Bluefruit.connected() &&
+    !disconnectPending) {
+        int value = bleuart.read();
 
-        if (Bluefruit.connected() && !disconnectPending) {
-            processCommand(command);
+        if (value < 0) {
+            break;
         }
+
+        char c = static_cast<char>(value);
+
+        if (c == '\n') {
+            processReceivedCommand(true);
+            continue;
+        }
+
+        if (rxBuffer.length() < RX_MAX_LENGTH) {
+            rxBuffer += c;
+        } else {
+            rxOverflow = true;
+        }
+
+        rxPending = true;
+        lastRxMillis = millis();
+    }
+
+    if (rxPending &&
+    millis() - lastRxMillis > LEGACY_RX_TIMEOUT_MS &&
+    !rxBuffer.startsWith("TX|")) {
+        processReceivedCommand(false);
     }
 }
