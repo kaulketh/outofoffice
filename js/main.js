@@ -1,7 +1,12 @@
 import {initPwa, registerServiceWorker} from "./pwa.js";
 import {resetBattery} from "./battery.js";
 import {resetRemoteState} from "./state.js";
-import {hidePeoplePanels, initPeople, setUpdateButtons} from "./people.js";
+import {
+    abortUpdates,
+    hidePeoplePanels,
+    initPeople,
+    setUpdateButtons
+} from "./people.js";
 import {connectBle, getDeviceName, sendCommand} from "./ble.js";
 import {createProtocol} from "./protocol.js";
 
@@ -84,10 +89,12 @@ function resetRemoteData() {
     resetBattery();
     resetProtocol();
     hidePeoplePanels();
+    abortUpdates();
 }
 
 
 function handleDisconnected() {
+    abortUpdates(true);
     setConnectionState("disconnected");
     setUpdateButtons(false);
     setMessage("Bluetooth-Verbindung getrennt.", "error");
@@ -96,8 +103,11 @@ function handleDisconnected() {
 
 function handleCommandError(error) {
     console.error(error);
-    setMessage("Bluetooth-Fehler: " + error.message, "error");
-    setUpdateButtons(true);
+    abortUpdates(true);
+    setMessage(
+        "Bluetooth-Fehler: " + error.message,
+        "error"
+    );
 }
 
 

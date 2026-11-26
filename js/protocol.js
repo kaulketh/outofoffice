@@ -1,5 +1,7 @@
 import {room} from "./state.js";
 import {
+    abortUpdates,
+    completeUpdate,
     ensurePerson,
     processState,
     rebuildOwnerSelect,
@@ -42,19 +44,21 @@ export function createProtocol({
         }
 
         if (line === "STATE_END") {
+            const wasUpdate = refreshAfterUpdate;
+            refreshAfterUpdate = false;
+
             onStateComplete();
             rebuildOwnerSelect();
             updateOwnerDisplay();
             renderPeople();
             showPeoplePanel();
 
-            setMessage(
-                refreshAfterUpdate
-                    ? "Schild-Inhalt wurde aktualisiert."
-                    : "",
-                "ok"
-            );
-            refreshAfterUpdate = false;
+            if (wasUpdate) {
+                completeUpdate();
+            } else {
+                setMessage("");
+            }
+
             setUpdateButtons(true);
             return;
         }
@@ -104,11 +108,13 @@ export function createProtocol({
                 break;
 
             case "ERR":
+                refreshAfterUpdate = false;
+                abortUpdates();
+
                 setMessage(
                     "Raumschild meldet Fehler: " + fields.slice(1).join(" "),
                     "error"
                 );
-                setUpdateButtons(true);
                 break;
         }
     }

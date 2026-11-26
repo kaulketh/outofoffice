@@ -1,5 +1,4 @@
-
-import { room, people } from "./state.js";
+import {people, room} from "./state.js";
 
 const ownerCompactPanel = document.getElementById("ownerCompactPanel");
 const ownerCompactName = document.getElementById("ownerCompactName");
@@ -10,8 +9,13 @@ const ownerDoneButton = document.getElementById("ownerDoneButton");
 const ownerCancelButton = document.getElementById("ownerCancelButton");
 const personsPanel = document.getElementById("personsPanel");
 const personsContainer = document.getElementById("persons");
+const updateAllButton = document.getElementById("updateAllButton");
 
 let services;
+let updateQueue = [];
+let updateActive = false;
+let updateTimer = null;
+let updateBlocked = false;
 
 export function initPeople(api) {
     services = api;
@@ -41,11 +45,14 @@ export function initPeople(api) {
         rebuildOwnerSelect();
         updateOwnerDisplay();
     });
+    updateAllButton.addEventListener("click", () => {
+        startUpdate(Array.from(people.keys()));
+    });
 }
 
 export function ensurePerson(id, name) {
     if (!people.has(id)) {
-        people.set(id, { id, name, status: "", text: "" });
+        people.set(id, {id, name, status: "", text: ""});
     } else if (name) {
         people.get(id).name = name;
     }
@@ -195,31 +202,89 @@ function currentStatusText(person) {
     return result;
 }
 
-async function updatePerson(id) {
-    if (!people.has(id)) {
-        return;
-    }
+function updatePerson(id) {
+    startUpdate([id]);
+}
 
+function buildUpdateCommand(id) {
     let status = document.getElementById(`status-${id}`).value.trim();
     let text = document.getElementById(`text-${id}`).value.trim();
 
     if (status.includes("|") || text.includes("|")) {
-        services.setMessage('Das Zeichen "|" kann nicht verwendet werden.', "error");
-        return;
+        throw new Error(
+            `${people.get(id).name}: Das Zeichen "|" kann nicht verwendet werden.`
+        );
     }
 
     status = normalizeGerman(status.replace(/[\r\n]+/g, " "));
     text = normalizeGerman(text.replace(/[\r\n]+/g, " "));
 
-    const command = `SET|${id}|${status}|${text}`;
+    return `SET|${id}|${status}|${text}`;
+}
+
+function startUpdate(ids) {
+    if (updateActive || updateBlocked || !ids.length) {
+        return;
+    }
 
     try {
-        setUpdateButtons(false);
-        services.setMessage("Sende Änderung …", "info");
+        updateQueue = ids.map(buildUpdateCommand);
+    } catch (error) {
+        services.setMessage(error.message, "error");
+        return;
+    }
+
+    updateActive = true;
+    setUpdateButtons(false);
+    sendNextUpdate();
+}
+
+async function sendNextUpdate() {
+    if (!updateQueue.length) {
+        updateActive = false;
+        setUpdateButtons(true);
+        services.setMessage(
+            "Schild-Inhalt wurde aktualisiert.", "ok"
+        );
+        return;
+    }
+
+    const command = updateQueue.shift();
+
+    services.setMessage("Sende Änderung …", "info");
+
+    updateTimer = setTimeout(() => {
+        abortUpdates(true);
+        services.setMessage(
+            "Zeitüberschreitung. Bitte Bluetooth-Verbindung neu herstellen.",
+            "error"
+        );
+    }, 60000);
+
+    try {
         await services.sendCommand(command);
     } catch (error) {
         services.handleCommandError(error);
     }
+}
+
+export function completeUpdate() {
+    if (!updateActive) {
+        return;
+    }
+
+    clearTimeout(updateTimer);
+    updateTimer = null;
+    sendNextUpdate();
+}
+
+export function abortUpdates(blocked = false) {
+    clearTimeout(updateTimer);
+    updateTimer = null;
+    updateQueue = [];
+    updateActive = false;
+    updateBlocked = blocked;
+    setUpdateButtons(!blocked);
 }
 
 function normalizeGerman(text) {
@@ -234,9 +299,20 @@ function normalizeGerman(text) {
 }
 
 export function setUpdateButtons(enabled) {
+    const locked = !enabled || updateActive || updateBlocked;
+
     document.querySelectorAll(".update-button").forEach(button => {
-        button.disabled = !enabled;
+        button.disabled = locked;
     });
+
+    personsContainer.querySelectorAll("input, textarea").forEach(input => {
+        input.disabled = locked;
+    });
+
+    changeOwnerButton.disabled = locked;
+    ownerDoneButton.disabled = locked;
+    ownerCancelButton.disabled = locked;
+    ownerSelect.disabled = locked;
 }
 
 export function hidePeoplePanels() {
