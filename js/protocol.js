@@ -1,25 +1,24 @@
-
-import { room } from "./state.js";
+import {room} from "./state.js";
 import {
     ensurePerson,
     processState,
     rebuildOwnerSelect,
-    updateOwnerDisplay,
     renderPeople,
     setUpdateButtons,
-    showPeoplePanel
+    showPeoplePanel,
+    updateOwnerDisplay
 } from "./people.js";
-import { processBattery } from "./battery.js";
-import { sendCommand } from "./ble.js";
+import {processBattery} from "./battery.js";
+import {sendCommand} from "./ble.js";
 
 export function createProtocol({
-    setMessage,
-    handleCommandError,
-    onRoom,
-    onOrganization,
-    onDepartment,
-    onStateComplete
-}) {
+                                   setMessage,
+                                   handleCommandError,
+                                   onRoom,
+                                   onOrganization,
+                                   onDepartment,
+                                   onStateComplete
+                               }) {
     let refreshAfterUpdate = false;
 
     function requestState() {
@@ -30,12 +29,10 @@ export function createProtocol({
         console.log("Raumschild:", line);
 
         if (line === "INFO_BEGIN") {
-            setMessage("Lese Konfiguration …", "info");
             return;
         }
 
         if (line === "INFO_END") {
-            setMessage("Konfiguration gelesen – lese Status …", "info");
             requestState();
             return;
         }
@@ -51,11 +48,12 @@ export function createProtocol({
             renderPeople();
             showPeoplePanel();
 
-            const message = refreshAfterUpdate
-                ? "Schild-Inhalt wurde aktualisiert."
-                : "Schild-Inhalt vollständig geladen.";
-
-            setMessage(message, "ok");
+            setMessage(
+                refreshAfterUpdate
+                    ? "Schild-Inhalt wurde aktualisiert."
+                    : "",
+                "ok"
+            );
             refreshAfterUpdate = false;
             setUpdateButtons(true);
             return;
@@ -119,5 +117,5 @@ export function createProtocol({
         refreshAfterUpdate = false;
     }
 
-    return { processLine, resetProtocol };
+    return {processLine, resetProtocol};
 }

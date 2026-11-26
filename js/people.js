@@ -130,7 +130,14 @@ export function renderPeople() {
         details.open = !preferred || person.id === preferred;
 
         const summary = document.createElement("summary");
-        summary.textContent = person.name;
+        const name = document.createElement("span");
+        const status = document.createElement("span");
+
+        name.textContent = person.name;
+        status.className = "person-summary-status";
+        status.textContent = person.status || "–";
+
+        summary.append(name, status);
 
         const body = document.createElement("div");
         body.className = "person-body";

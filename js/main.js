@@ -18,6 +18,23 @@ function setMessage(text, type = "info") {
 }
 
 
+function setConnectionState(state) {
+    const labels = {
+        disconnected: "Raum-Schild auswählen",
+        connecting: "Verbindung wird hergestellt …",
+        loading: "Inhalt wird geladen …",
+        ready: "Verbunden und Inhalt vollständig geladen"
+    };
+
+    connectButton.textContent = labels[state];
+    connectButton.disabled = state !== "disconnected";
+    connectionDot.classList.toggle(
+        "connected",
+        state === "loading" || state === "ready"
+    );
+}
+
+
 async function connect() {
     if (!navigator.bluetooth) {
         setMessage(
@@ -28,38 +45,32 @@ async function connect() {
     }
 
     try {
-        setMessage("Raumschild auswählen …", "info");
+        setMessage("");
+        setConnectionState("connecting");
 
         await connectBle({
             onLine: processLine,
             onDisconnected: handleDisconnected,
 
             onConnecting: () => {
-                setMessage("Verbinde …", "info");
+                setConnectionState("connecting");
             },
 
             onConnected: () => {
-                connectionDot.classList.add("connected");
-                connectButton.textContent = "Verbunden";
-                connectButton.disabled = true;
-
                 resetRemoteData();
-
-                setMessage(
-                    "Verbunden – lese Konfiguration …",
-                    "info"
-                );
+                setConnectionState("loading");
             }
         });
 
     } catch (error) {
+        setConnectionState("disconnected");
+
         if (error.name === "NotFoundError") {
-            setMessage("Keine Verbindung hergestellt.", "info");
+            setMessage("");
             return;
         }
 
         console.error(error);
-
         setMessage(
             "Verbindung fehlgeschlagen: " + error.message,
             "error"
@@ -77,10 +88,8 @@ function resetRemoteData() {
 
 
 function handleDisconnected() {
-    connectionDot.classList.remove("connected");
-    connectButton.textContent = "Raumschild verbinden";
-    connectButton.disabled = false;
-
+    setConnectionState("disconnected");
+    setUpdateButtons(false);
     setMessage("Bluetooth-Verbindung getrennt.", "error");
 }
 
@@ -120,6 +129,8 @@ const {processLine, resetProtocol} = createProtocol({
     },
 
     onStateComplete: () => {
+        setConnectionState("ready");
+
         const now = new Date();
 
         lastConnected.textContent =
@@ -136,6 +147,6 @@ initPwa(installButton);
 connectButton.addEventListener("click", connect);
 
 window.addEventListener("load", async () => {
+    setConnectionState("disconnected");
     await registerServiceWorker();
-    setMessage("Bereit zum Verbinden.", "info");
 });
