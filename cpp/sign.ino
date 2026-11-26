@@ -48,6 +48,14 @@ struct PersonState {
 
 PersonState personState[PERSON_COUNT];
 
+PersonState pendingState[PERSON_COUNT];
+
+bool transactionActive = false;
+volatile bool disconnectPending = false;
+
+unsigned long transactionLastActivity = 0;
+constexpr unsigned long TRANSACTION_TIMEOUT_MS = 30000;
+
 int findPersonIndex(const String& id) {
     for (size_t i = 0; i < PERSON_COUNT; i++) {
         if (id == PERSONS[i].id) {
@@ -57,7 +65,7 @@ int findPersonIndex(const String& id) {
     return -1;
 }
 
-bool saveState() {
+bool saveState(const PersonState* states = personState) {
     File file(InternalFS);
     if (!file.open(STATE_FILE, FILE_O_WRITE)) {
         Serial.println("Fehler: Statusdatei kann nicht geoeffnet werden");
@@ -69,9 +77,9 @@ bool saveState() {
     for (size_t i = 0; i < PERSON_COUNT; i++) {
         file.print(PERSONS[i].id);
         file.print("|");
-        file.print(personState[i].status);
+        file.print(states[i].status);
         file.print("|");
-        file.println(personState[i].text);
+        file.println(states[i].text);
     }
     file.close();
     Serial.println("Status im Flash gespeichert");
@@ -424,6 +432,7 @@ void sendInfo() {
         sendLine(String("PERSON|") + PERSONS[i].id + "|" + PERSONS[i].name);
     }
     sendBatteryStatus();
+    sendLine("CAP|TRANSACTION");
     sendLine("INFO_END");
 }
 
@@ -433,6 +442,61 @@ void sendStates() {
         sendLine(String("STATE|") + PERSONS[i].id + "|" + PERSONS[i].name + "|" + personState[i].status + "|" + personState[i].text);
     }
     sendLine("STATE_END");
+}
+
+void abortTransaction() {
+    transactionActive = false;
+    transactionLastActivity = 0;
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        pendingState[i].status = "";
+        pendingState[i].text = "";
+    }
+}
+
+void beginTransaction() {
+    if (transactionActive) {
+        sendLine("ERR|TRANSACTION_ACTIVE");
+        return;
+    }
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        pendingState[i] = personState[i];
+    }
+
+    transactionActive = true;
+    transactionLastActivity = millis();
+
+    sendLine("OK|BEGIN");
+}
+
+void commitTransaction() {
+    if (!transactionActive) {
+        sendLine("ERR|NO_TRANSACTION");
+        return;
+    }
+
+    if (disconnectPending || !Bluefruit.connected()) {
+        abortTransaction();
+        return;
+    }
+
+    if (!saveState(pendingState)) {
+        abortTransaction();
+        sendLine("ERR|SAVE_FAILED");
+        return;
+    }
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        personState[i] = pendingState[i];
+    }
+
+    abortTransaction();
+
+    sendLine("OK|COMMIT");
+    sendLine("REFRESHING");
+    updateDisplay();
+    sendLine("READY");
 }
 
 void processCommand(String command) {
@@ -452,6 +516,19 @@ void processCommand(String command) {
     }
     if (command == "BAT") {
         sendBatteryStatus();
+        return;
+    }
+    if (command == "BEGIN") {
+        beginTransaction();
+        return;
+    }
+    if (command == "COMMIT") {
+        commitTransaction();
+        return;
+    }
+    if (command == "ABORT") {
+        abortTransaction();
+        sendLine("OK|ABORT");
         return;
     }
     if (command == "REDRAW") {
@@ -481,6 +558,14 @@ void processCommand(String command) {
     int index = findPersonIndex(personId);
     if (index < 0) {
         sendLine(String("ERR|UNKNOWN_PERSON|") + personId);
+        return;
+    }
+    if (transactionActive) {
+        pendingState[index].status = status;
+        pendingState[index].text = text;
+        transactionLastActivity = millis();
+
+        sendLine(String("OK|STAGED|") + personId);
         return;
     }
     personState[index].status = status;
@@ -519,6 +604,7 @@ void disconnectCallback(uint16_t connHandle, uint8_t reason) {
     (void)connHandle;
     (void)reason;
     Serial.println("BLE getrennt");
+    disconnectPending = true;
 }
 
 void startAdvertising() {
@@ -589,11 +675,30 @@ void setup() {
 }
 
 void loop() {
-    // BLE-Kommandos können über mehrere Pakete verteilt eintreffen.
+    if (disconnectPending) {
+        disconnectPending = false;
+        rxBuffer = "";
+        rxPending = false;
+
+        if (transactionActive) {
+            abortTransaction();
+            Serial.println("Transaktion wegen BLE-Abbruch verworfen");
+        }
+    }
+
+    if (transactionActive &&
+    millis() - transactionLastActivity > TRANSACTION_TIMEOUT_MS) {
+        abortTransaction();
+        sendLine("ERR|TRANSACTION_TIMEOUT");
+    }
+
     if (rxPending && millis() - lastRxMillis > 60) {
         String command = rxBuffer;
         rxBuffer = "";
         rxPending = false;
-        processCommand(command);
+
+        if (Bluefruit.connected() && !disconnectPending) {
+            processCommand(command);
+        }
     }
 }
