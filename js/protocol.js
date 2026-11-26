@@ -8,7 +8,8 @@ import {
     renderPeople,
     setUpdateButtons,
     showPeoplePanel,
-    updateOwnerDisplay
+    updateOwnerDisplay,
+    processTransactionAck
 } from "./people.js";
 import {processBattery} from "./battery.js";
 import {sendCommand} from "./ble.js";
@@ -66,6 +67,12 @@ export function createProtocol({
         const fields = line.split("|");
 
         switch (fields[0]) {
+            case "CAP":
+                if (fields[1] === "TRANSACTION") {
+                    room.transactionSupported = true;
+                }
+                break;
+
             case "ROOM":
                 room.number = fields.slice(1).join("|");
                 onRoom(room.number);
@@ -94,6 +101,10 @@ export function createProtocol({
                 break;
 
             case "OK":
+                if (processTransactionAck(line)) {
+                    break;
+                }
+
                 setMessage("Änderung übernommen.", "ok");
                 break;
 
@@ -109,10 +120,11 @@ export function createProtocol({
 
             case "ERR":
                 refreshAfterUpdate = false;
-                abortUpdates();
+                abortUpdates(room.transactionSupported);
 
                 setMessage(
-                    "Raumschild meldet Fehler: " + fields.slice(1).join(" "),
+                    "Raumschild meldet Fehler: " +
+                    fields.slice(1).join(" "),
                     "error"
                 );
                 break;

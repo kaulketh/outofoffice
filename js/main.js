@@ -7,7 +7,12 @@ import {
     initPeople,
     setUpdateButtons
 } from "./people.js";
-import {connectBle, getDeviceName, sendCommand} from "./ble.js";
+import {
+    connectBle,
+    getDeviceName,
+    sendCommand,
+    sendTransactionCommand
+} from "./ble.js";
 import {createProtocol} from "./protocol.js";
 
 const connectButton = document.getElementById("connectButton");
@@ -116,6 +121,7 @@ function handleCommandError(error) {
 // ============================================================
 initPeople({
     sendCommand,
+    sendTransactionCommand,
     setMessage,
     handleCommandError
 });

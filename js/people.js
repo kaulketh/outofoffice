@@ -16,6 +16,8 @@ let updateQueue = [];
 let updateActive = false;
 let updateTimer = null;
 let updateBlocked = false;
+let transactionMode = false;
+let transactionExpected = "";
 
 export function initPeople(api) {
     services = api;
@@ -234,9 +236,17 @@ function startUpdate(ids) {
         return;
     }
 
+    transactionMode =
+        room.transactionSupported && ids.length > 1;
+
     updateActive = true;
     setUpdateButtons(false);
-    sendNextUpdate();
+
+    if (transactionMode) {
+        sendTransactionStep("BEGIN", "OK|BEGIN");
+    } else {
+        sendNextUpdate();
+    }
 }
 
 async function sendNextUpdate() {
@@ -268,6 +278,81 @@ async function sendNextUpdate() {
     }
 }
 
+async function sendTransactionStep(command, expected) {
+    clearTimeout(updateTimer);
+
+    transactionExpected = expected;
+
+    updateTimer = setTimeout(() => {
+        abortUpdates(true);
+
+        services.setMessage(
+            "Transaktions-Timeout. Bitte Bluetooth-Verbindung neu herstellen.",
+            "error"
+        );
+    }, 60000);
+
+    try {
+        await services.sendTransactionCommand(command);
+    } catch (error) {
+        services.handleCommandError(error);
+    }
+}
+
+export function processTransactionAck(line) {
+    if (!updateActive || !transactionMode) {
+        return false;
+    }
+
+    if (line !== transactionExpected) {
+        return false;
+    }
+
+    clearTimeout(updateTimer);
+    updateTimer = null;
+    transactionExpected = "";
+
+    if (line === "OK|COMMIT") {
+        services.setMessage(
+            "Änderungen übernommen – aktualisiere Anzeige …",
+            "info"
+        );
+
+        updateTimer = setTimeout(() => {
+            abortUpdates(true);
+
+            services.setMessage(
+                "Keine abschließende Statusbestätigung erhalten.",
+                "error"
+            );
+        }, 60000);
+
+        return true;
+    }
+
+    if (updateQueue.length) {
+        const command = updateQueue.shift();
+        const id = command.split("|")[1];
+
+        services.setMessage(
+            "Übertrage Personenstatus …", "info"
+        );
+
+        sendTransactionStep(
+            command,
+            `OK|STAGED|${id}`
+        );
+    } else {
+        services.setMessage(
+            "Übernehme alle Änderungen …", "info"
+        );
+
+        sendTransactionStep("COMMIT", "OK|COMMIT");
+    }
+
+    return true;
+}
+
 export function completeUpdate() {
     if (!updateActive) {
         return;
@@ -275,15 +360,34 @@ export function completeUpdate() {
 
     clearTimeout(updateTimer);
     updateTimer = null;
+
+    if (transactionMode) {
+        transactionMode = false;
+        transactionExpected = "";
+        updateActive = false;
+
+        setUpdateButtons(true);
+
+        services.setMessage(
+            "Alle Personen wurden aktualisiert.", "ok"
+        );
+
+        return;
+    }
+
     sendNextUpdate();
 }
 
 export function abortUpdates(blocked = false) {
     clearTimeout(updateTimer);
+
     updateTimer = null;
     updateQueue = [];
     updateActive = false;
     updateBlocked = blocked;
+    transactionMode = false;
+    transactionExpected = "";
+
     setUpdateButtons(!blocked);
 }
 
