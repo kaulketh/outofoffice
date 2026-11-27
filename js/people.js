@@ -137,13 +137,11 @@ export function renderPeople() {
     for (const person of list) {
         const details = document.createElement("details");
         details.className = "person";
-        // details.open = !preferred || person.id === preferred;
 
         const summary = document.createElement("summary");
         const name = document.createElement("span");
         const status = document.createElement("span");
-        const text = document.createElement("span");
-        //
+
         name.textContent = person.name;
         status.className = "person-summary-status";
         status.textContent = currentStatusText(person);
@@ -151,10 +149,6 @@ export function renderPeople() {
 
         const body = document.createElement("div");
         body.className = "person-body";
-
-        // const current = document.createElement("div");
-        // current.className = "person-status";
-        // current.textContent = currentStatusText(person);
 
         const statusLabel = document.createElement("label");
         statusLabel.textContent = "Status";
@@ -182,7 +176,6 @@ export function renderPeople() {
         button.addEventListener("click", () => updatePerson(person.id));
 
         body.append(
-            //current,
             statusLabel,
             statusInput,
             textLabel,
