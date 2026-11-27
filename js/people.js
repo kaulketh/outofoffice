@@ -19,6 +19,7 @@ let updateBlocked = false;
 let transactionMode = false;
 let transactionExpected = "";
 
+
 export function initPeople(api) {
     services = api;
 
@@ -312,6 +313,17 @@ export function processTransactionAck(line) {
     updateTimer = null;
     transactionExpected = "";
 
+    if (line === "OK|ABORT") {
+        abortUpdates();
+
+        services.setMessage(
+            "Transaktion erfolgreich abgebrochen.",
+            "ok"
+        );
+
+        return true;
+    }
+
     if (line === "OK|COMMIT") {
         services.setMessage(
             "Änderungen übernommen – aktualisiere Anzeige …",
@@ -320,13 +332,11 @@ export function processTransactionAck(line) {
 
         updateTimer = setTimeout(() => {
             abortUpdates(true);
-
             services.setMessage(
                 "Keine abschließende Statusbestätigung erhalten.",
                 "error"
             );
         }, 60000);
-
         return true;
     }
 
@@ -337,19 +347,16 @@ export function processTransactionAck(line) {
         services.setMessage(
             "Übertrage Personenstatus …", "info"
         );
-
-        sendTransactionStep(
-            command,
-            `OK|STAGED|${id}`
+        sendTransactionStep(command, `OK|STAGED|${id}`
         );
     } else {
+
+
         services.setMessage(
             "Übernehme alle Änderungen …", "info"
         );
-
         sendTransactionStep("COMMIT", "OK|COMMIT");
     }
-
     return true;
 }
 
