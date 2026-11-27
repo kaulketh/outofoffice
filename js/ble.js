@@ -81,6 +81,10 @@ export async function sendCommand(command) {
     }
 }
 
+export async function sendTransactionCommand(command) {
+    await sendCommand(`TX|${command}\n`);
+}
+
 function handleNotification(event) {
     const value = event.target.value;
 

@@ -1,25 +1,27 @@
-
-import { room } from "./state.js";
+import {room} from "./state.js";
 import {
+    abortUpdates,
+    completeUpdate,
     ensurePerson,
     processState,
     rebuildOwnerSelect,
-    updateOwnerDisplay,
     renderPeople,
     setUpdateButtons,
-    showPeoplePanel
+    showPeoplePanel,
+    updateOwnerDisplay,
+    processTransactionAck
 } from "./people.js";
-import { processBattery } from "./battery.js";
-import { sendCommand } from "./ble.js";
+import {processBattery} from "./battery.js";
+import {sendCommand} from "./ble.js";
 
 export function createProtocol({
-    setMessage,
-    handleCommandError,
-    onRoom,
-    onOrganization,
-    onDepartment,
-    onStateComplete
-}) {
+                                   setMessage,
+                                   handleCommandError,
+                                   onRoom,
+                                   onOrganization,
+                                   onDepartment,
+                                   onStateComplete
+                               }) {
     let refreshAfterUpdate = false;
 
     function requestState() {
@@ -27,15 +29,13 @@ export function createProtocol({
     }
 
     function processLine(line) {
-        console.log("Raumschild:", line);
+        console.log("OutOfOffice:", line);
 
         if (line === "INFO_BEGIN") {
-            setMessage("Lese Konfiguration …", "info");
             return;
         }
 
         if (line === "INFO_END") {
-            setMessage("Konfiguration gelesen – lese Status …", "info");
             requestState();
             return;
         }
@@ -45,18 +45,21 @@ export function createProtocol({
         }
 
         if (line === "STATE_END") {
+            const wasUpdate = refreshAfterUpdate;
+            refreshAfterUpdate = false;
+
             onStateComplete();
             rebuildOwnerSelect();
             updateOwnerDisplay();
             renderPeople();
             showPeoplePanel();
 
-            const message = refreshAfterUpdate
-                ? "Schild-Inhalt wurde aktualisiert."
-                : "Schild-Inhalt vollständig geladen.";
+            if (wasUpdate) {
+                completeUpdate();
+            } else {
+                setMessage("");
+            }
 
-            setMessage(message, "ok");
-            refreshAfterUpdate = false;
             setUpdateButtons(true);
             return;
         }
@@ -64,6 +67,12 @@ export function createProtocol({
         const fields = line.split("|");
 
         switch (fields[0]) {
+            case "CAP":
+                if (fields[1] === "TRANSACTION") {
+                    room.transactionSupported = true;
+                }
+                break;
+
             case "ROOM":
                 room.number = fields.slice(1).join("|");
                 onRoom(room.number);
@@ -92,6 +101,10 @@ export function createProtocol({
                 break;
 
             case "OK":
+                if (processTransactionAck(line)) {
+                    break;
+                }
+
                 setMessage("Änderung übernommen.", "ok");
                 break;
 
@@ -106,11 +119,14 @@ export function createProtocol({
                 break;
 
             case "ERR":
+                refreshAfterUpdate = false;
+                abortUpdates(room.transactionSupported);
+
                 setMessage(
-                    "Raumschild meldet Fehler: " + fields.slice(1).join(" "),
+                    "OutOfOffice meldet Fehler: " +
+                    fields.slice(1).join(" "),
                     "error"
                 );
-                setUpdateButtons(true);
                 break;
         }
     }
@@ -119,5 +135,5 @@ export function createProtocol({
         refreshAfterUpdate = false;
     }
 
-    return { processLine, resetProtocol };
+    return {processLine, resetProtocol};
 }

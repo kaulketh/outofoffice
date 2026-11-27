@@ -2,7 +2,8 @@
 export const room = {
     number: "",
     organization: "",
-    department: ""
+    department: "",
+    transactionSupported: false
 };
 
 export const people = new Map();
@@ -12,4 +13,5 @@ export function resetRemoteState() {
     room.organization = "";
     room.department = "";
     people.clear();
+    room.transactionSupported = false;
 }

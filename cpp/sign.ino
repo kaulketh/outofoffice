@@ -20,6 +20,8 @@
 using namespace Adafruit_LittleFS_Namespace;
 
 constexpr const char* STATE_FILE = "/sign.txt";
+constexpr const char* STATE_TEMP_FILE = "/sign.tmp";
+
 
 constexpr uint8_t EPD_CS = D1;
 constexpr uint8_t EPD_DC = D2;
@@ -31,12 +33,16 @@ constexpr uint8_t EPD_PWR = D5;
 GxEPD2_BW<GxEPD2_583_T8, GxEPD2_583_T8::HEIGHT / 2> display(
 GxEPD2_583_T8(EPD_CS, EPD_DC, EPD_RST, EPD_BUSY));
 
-BLEUart bleuart;
+BLEUart bleuart(512);
+
 String rxBuffer;
 bool rxPending = false;
+bool rxOverflow = false;
 unsigned long lastRxMillis = 0;
 
-// Kleine Pakete verhindern überlaufende Notification-Puffer.
+constexpr size_t RX_MAX_LENGTH = 512;
+constexpr unsigned long LEGACY_RX_TIMEOUT_MS = 60;
+
 constexpr size_t BLE_TX_CHUNK_SIZE = 16;
 constexpr uint16_t BLE_TX_PAUSE_MS = 25;
 constexpr uint8_t BLE_TX_MAX_RETRIES = 20;
@@ -47,6 +53,13 @@ struct PersonState {
 };
 
 PersonState personState[PERSON_COUNT];
+PersonState pendingState[PERSON_COUNT];
+
+bool transactionActive = false;
+volatile bool disconnectPending = false;
+
+unsigned long transactionLastActivity = 0;
+constexpr unsigned long TRANSACTION_TIMEOUT_MS = 30000;
 
 int findPersonIndex(const String& id) {
     for (size_t i = 0; i < PERSON_COUNT; i++) {
@@ -57,23 +70,66 @@ int findPersonIndex(const String& id) {
     return -1;
 }
 
-bool saveState() {
+bool saveState(const PersonState* states = personState) {
+    String data = "V1\r\n";
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        data += PERSONS[i].id;
+        data += "|";
+        data += states[i].status;
+        data += "|";
+        data += states[i].text;
+        data += "\r\n";
+    }
+
+    if (InternalFS.exists(STATE_TEMP_FILE)) {
+        if (!InternalFS.remove(STATE_TEMP_FILE)) {
+            Serial.println("Fehler: Temp-Datei kann nicht entfernt werden");
+            return false;
+        }
+    }
+
     File file(InternalFS);
-    if (!file.open(STATE_FILE, FILE_O_WRITE)) {
-        Serial.println("Fehler: Statusdatei kann nicht geoeffnet werden");
+
+    if (!file.open(STATE_TEMP_FILE, FILE_O_WRITE)) {
+        Serial.println("Fehler: Temp-Datei kann nicht geoeffnet werden");
         return false;
     }
-    file.truncate();
-    file.seek(0);
-    file.println("V1");
-    for (size_t i = 0; i < PERSON_COUNT; i++) {
-        file.print(PERSONS[i].id);
-        file.print("|");
-        file.print(personState[i].status);
-        file.print("|");
-        file.println(personState[i].text);
-    }
+
+    size_t written = file.print(data);
     file.close();
+
+    if (written != data.length()) {
+        Serial.println("Fehler: Schreibvorgang unvollstaendig");
+        return false;
+    }
+
+    if (!file.open(STATE_TEMP_FILE, FILE_O_READ)) {
+        Serial.println("Fehler: Temp-Datei kann nicht gelesen werden");
+        return false;
+    }
+
+    bool valid = file.size() == data.length();
+
+    for (size_t i = 0; valid && i < data.length(); i++) {
+        if (file.read() != static_cast<uint8_t>(data[i])) {
+            valid = false;
+        }
+    }
+
+    file.close();
+
+    if (!valid) {
+        Serial.println("Fehler: Verifikation fehlgeschlagen");
+        return false;
+    }
+
+
+    if (!InternalFS.rename(STATE_TEMP_FILE, STATE_FILE)) {
+        Serial.println("Fehler: Statusdatei kann nicht ersetzt werden");
+        return false;
+    }
+
     Serial.println("Status im Flash gespeichert");
     return true;
 }
@@ -424,6 +480,7 @@ void sendInfo() {
         sendLine(String("PERSON|") + PERSONS[i].id + "|" + PERSONS[i].name);
     }
     sendBatteryStatus();
+    sendLine("CAP|TRANSACTION");
     sendLine("INFO_END");
 }
 
@@ -433,6 +490,61 @@ void sendStates() {
         sendLine(String("STATE|") + PERSONS[i].id + "|" + PERSONS[i].name + "|" + personState[i].status + "|" + personState[i].text);
     }
     sendLine("STATE_END");
+}
+
+void abortTransaction() {
+    transactionActive = false;
+    transactionLastActivity = 0;
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        pendingState[i].status = "";
+        pendingState[i].text = "";
+    }
+}
+
+void beginTransaction() {
+    if (transactionActive) {
+        sendLine("ERR|TRANSACTION_ACTIVE");
+        return;
+    }
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        pendingState[i] = personState[i];
+    }
+
+    transactionActive = true;
+    transactionLastActivity = millis();
+
+    sendLine("OK|BEGIN");
+}
+
+void commitTransaction() {
+    if (!transactionActive) {
+        sendLine("ERR|NO_TRANSACTION");
+        return;
+    }
+
+    if (disconnectPending || !Bluefruit.connected()) {
+        abortTransaction();
+        return;
+    }
+
+    if (!saveState(pendingState)) {
+        abortTransaction();
+        sendLine("ERR|SAVE_FAILED");
+        return;
+    }
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        personState[i] = pendingState[i];
+    }
+
+    abortTransaction();
+
+    sendLine("OK|COMMIT");
+    sendLine("REFRESHING");
+    updateDisplay();
+    sendLine("READY");
 }
 
 void processCommand(String command) {
@@ -452,6 +564,19 @@ void processCommand(String command) {
     }
     if (command == "BAT") {
         sendBatteryStatus();
+        return;
+    }
+    if (command == "BEGIN") {
+        beginTransaction();
+        return;
+    }
+    if (command == "COMMIT") {
+        commitTransaction();
+        return;
+    }
+    if (command == "ABORT") {
+        abortTransaction();
+        sendLine("OK|ABORT");
         return;
     }
     if (command == "REDRAW") {
@@ -483,9 +608,21 @@ void processCommand(String command) {
         sendLine(String("ERR|UNKNOWN_PERSON|") + personId);
         return;
     }
+    if (transactionActive) {
+        pendingState[index].status = status;
+        pendingState[index].text = text;
+        transactionLastActivity = millis();
+
+        sendLine(String("OK|STAGED|") + personId);
+        return;
+    }
+    PersonState previousState = personState[index];
+
     personState[index].status = status;
     personState[index].text = text;
+
     if (!saveState()) {
+        personState[index] = previousState;
         sendLine("ERR|SAVE_FAILED");
         return;
     }
@@ -495,17 +632,7 @@ void processCommand(String command) {
     sendLine("READY");
 }
 
-void bleuartRxCallback(uint16_t connHandle) {
-    (void)connHandle;
-    while (bleuart.available()) {
-        char c = static_cast<char>(bleuart.read());
-        if (rxBuffer.length() < 512) {
-            rxBuffer += c;
-        }
-    }
-    rxPending = true;
-    lastRxMillis = millis();
-}
+
 
 void connectCallback(uint16_t connHandle) {
     BLEConnection* connection = Bluefruit.Connection(connHandle);
@@ -519,6 +646,7 @@ void disconnectCallback(uint16_t connHandle, uint8_t reason) {
     (void)connHandle;
     (void)reason;
     Serial.println("BLE getrennt");
+    disconnectPending = true;
 }
 
 void startAdvertising() {
@@ -566,7 +694,7 @@ void setup() {
     Bluefruit.Periph.setConnectCallback(connectCallback);
     Bluefruit.Periph.setDisconnectCallback(disconnectCallback);
     bleuart.begin();
-    bleuart.setRxCallback(bleuartRxCallback);
+
     startAdvertising();
 
     Serial.println();
@@ -588,12 +716,100 @@ void setup() {
     Serial.println("Warte auf BLE ...");
 }
 
+void resetRxBuffer() {
+    rxBuffer = "";
+    rxPending = false;
+    rxOverflow = false;
+}
+
+void processReceivedCommand(bool framed) {
+    String command = rxBuffer;
+    bool overflow = rxOverflow;
+
+    resetRxBuffer();
+
+    if (!Bluefruit.connected() || disconnectPending) {
+        return;
+    }
+
+    if (overflow) {
+        abortTransaction();
+        sendLine("ERR|RX_OVERFLOW");
+        return;
+    }
+
+    if (command.startsWith("TX|")) {
+        if (!framed) {
+            abortTransaction();
+            sendLine("ERR|INCOMPLETE_COMMAND");
+            return;
+        }
+
+        command = command.substring(3);
+    } else if (transactionActive ||
+    command == "BEGIN" ||
+    command == "COMMIT" ||
+    command == "ABORT") {
+        abortTransaction();
+        sendLine("ERR|TRANSACTION_FRAME_REQUIRED");
+        return;
+    }
+
+    processCommand(command);
+}
+
 void loop() {
-    // BLE-Kommandos können über mehrere Pakete verteilt eintreffen.
-    if (rxPending && millis() - lastRxMillis > 60) {
-        String command = rxBuffer;
-        rxBuffer = "";
-        rxPending = false;
-        processCommand(command);
+    if (disconnectPending) {
+        disconnectPending = false;
+
+        resetRxBuffer();
+
+        while (bleuart.available()) {
+            bleuart.read();
+        }
+
+        if (transactionActive) {
+            abortTransaction();
+            Serial.println("Transaktion wegen BLE-Abbruch verworfen");
+        }
+    }
+
+    if (transactionActive &&
+    millis() - transactionLastActivity > TRANSACTION_TIMEOUT_MS) {
+        abortTransaction();
+        resetRxBuffer();
+        sendLine("ERR|TRANSACTION_TIMEOUT");
+    }
+
+    while (bleuart.available() &&
+    Bluefruit.connected() &&
+    !disconnectPending) {
+        int value = bleuart.read();
+
+        if (value < 0) {
+            break;
+        }
+
+        char c = static_cast<char>(value);
+
+        if (c == '\n') {
+            processReceivedCommand(true);
+            continue;
+        }
+
+        if (rxBuffer.length() < RX_MAX_LENGTH) {
+            rxBuffer += c;
+        } else {
+            rxOverflow = true;
+        }
+
+        rxPending = true;
+        lastRxMillis = millis();
+    }
+
+    if (rxPending &&
+    millis() - lastRxMillis > LEGACY_RX_TIMEOUT_MS &&
+    !rxBuffer.startsWith("TX|")) {
+        processReceivedCommand(false);
     }
 }

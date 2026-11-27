@@ -18,7 +18,7 @@
         <img src="./assets/VividBlauesO³OutOfOffice-Logo.png" alt="O³ – OutOfOffice" class="maker-banner">
         <h1 id="title"></h1>
         <div class="header-info">
-            <div id="organizationTop">Raum-Schild auswählen</div>
+            <div id="organizationTop"></div>
             <div id="departmentTop"></div>
         </div>
     </header>
@@ -26,9 +26,9 @@
     <section class="panel">
         <div class="connection-row">
             <div id="connectionDot" class="dot"></div>
-            <button id="connectButton" class="primary"> Verbinden</button>
+            <button id="connectButton" class="primary">Raum-Schild auswählen</button>
         </div>
-        <div id="message">Bereit zum Verbinden.</div>
+        <div id="message" aria-live="polite"></div>
         <div id="lastConnected"
              class="last-connected">
         </div>
@@ -65,7 +65,7 @@
     <section
             id="ownerSetupPanel"
             class="panel">
-        <label for="ownerSelect"> Hauptnutzer, immer oben und ausgewählt.
+        <label for="ownerSelect"> Hauptnutzer ist auf oberer Position und vorausgewählt.
         </label>
         <select id="ownerSelect">
             <option value=""> Bitte auswählen …</option>
@@ -77,7 +77,11 @@
     </section>
     <!-- persons -->
     <section id="personsPanel">
-        <div id="persons"></div>
+    <div id="persons"></div>
+        <button id="updateAllButton"
+                class="update-button" disabled>
+            Alle Personen aktualisieren
+        </button>
     </section>
     <footer class="project-branding">
         <h2>O³ - OutOfOffice</h2>

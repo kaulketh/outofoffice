@@ -328,3 +328,19 @@ summary {
 
     color: var(--gray);
 }
+
+#message:empty {
+    display: none;
+}
+
+.person-summary-status {
+    margin-left: 8px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--gray);
+    overflow-wrap: anywhere;
+}
+
+#updateAllButton {
+    margin-top: 0;
+}
