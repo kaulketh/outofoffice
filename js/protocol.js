@@ -29,7 +29,7 @@ export function createProtocol({
     }
 
     function processLine(line) {
-        console.log("Raumschild:", line);
+        console.log("OutOfOffice:", line);
 
         if (line === "INFO_BEGIN") {
             return;
@@ -123,7 +123,7 @@ export function createProtocol({
                 abortUpdates(room.transactionSupported);
 
                 setMessage(
-                    "Raumschild meldet Fehler: " +
+                    "OutOfOffice meldet Fehler: " +
                     fields.slice(1).join(" "),
                     "error"
                 );
