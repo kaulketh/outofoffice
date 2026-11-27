@@ -20,6 +20,8 @@
 using namespace Adafruit_LittleFS_Namespace;
 
 constexpr const char* STATE_FILE = "/sign.txt";
+constexpr const char* STATE_TEMP_FILE = "/sign.tmp";
+
 
 constexpr uint8_t EPD_CS = D1;
 constexpr uint8_t EPD_DC = D2;
@@ -51,7 +53,6 @@ struct PersonState {
 };
 
 PersonState personState[PERSON_COUNT];
-
 PersonState pendingState[PERSON_COUNT];
 
 bool transactionActive = false;
@@ -70,22 +71,65 @@ int findPersonIndex(const String& id) {
 }
 
 bool saveState(const PersonState* states = personState) {
+    String data = "V1\r\n";
+
+    for (size_t i = 0; i < PERSON_COUNT; i++) {
+        data += PERSONS[i].id;
+        data += "|";
+        data += states[i].status;
+        data += "|";
+        data += states[i].text;
+        data += "\r\n";
+    }
+
+    if (InternalFS.exists(STATE_TEMP_FILE)) {
+        if (!InternalFS.remove(STATE_TEMP_FILE)) {
+            Serial.println("Fehler: Temp-Datei kann nicht entfernt werden");
+            return false;
+        }
+    }
+
     File file(InternalFS);
-    if (!file.open(STATE_FILE, FILE_O_WRITE)) {
-        Serial.println("Fehler: Statusdatei kann nicht geoeffnet werden");
+
+    if (!file.open(STATE_TEMP_FILE, FILE_O_WRITE)) {
+        Serial.println("Fehler: Temp-Datei kann nicht geoeffnet werden");
         return false;
     }
-    file.truncate();
-    file.seek(0);
-    file.println("V1");
-    for (size_t i = 0; i < PERSON_COUNT; i++) {
-        file.print(PERSONS[i].id);
-        file.print("|");
-        file.print(states[i].status);
-        file.print("|");
-        file.println(states[i].text);
-    }
+
+    size_t written = file.print(data);
     file.close();
+
+    if (written != data.length()) {
+        Serial.println("Fehler: Schreibvorgang unvollstaendig");
+        return false;
+    }
+
+    if (!file.open(STATE_TEMP_FILE, FILE_O_READ)) {
+        Serial.println("Fehler: Temp-Datei kann nicht gelesen werden");
+        return false;
+    }
+
+    bool valid = file.size() == data.length();
+
+    for (size_t i = 0; valid && i < data.length(); i++) {
+        if (file.read() != static_cast<uint8_t>(data[i])) {
+            valid = false;
+        }
+    }
+
+    file.close();
+
+    if (!valid) {
+        Serial.println("Fehler: Verifikation fehlgeschlagen");
+        return false;
+    }
+
+
+    if (!InternalFS.rename(STATE_TEMP_FILE, STATE_FILE)) {
+        Serial.println("Fehler: Statusdatei kann nicht ersetzt werden");
+        return false;
+    }
+
     Serial.println("Status im Flash gespeichert");
     return true;
 }
@@ -572,9 +616,13 @@ void processCommand(String command) {
         sendLine(String("OK|STAGED|") + personId);
         return;
     }
+    PersonState previousState = personState[index];
+
     personState[index].status = status;
     personState[index].text = text;
+
     if (!saveState()) {
+        personState[index] = previousState;
         sendLine("ERR|SAVE_FAILED");
         return;
     }
